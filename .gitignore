@@ -1,2 +1,3 @@
 cmd.txt
 .env
+__pycache__/

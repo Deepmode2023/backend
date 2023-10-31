@@ -1,5 +1,6 @@
 from sqlalchemy.dialects.postgresql import ARRAY, UUID
 from sqlalchemy import Boolean, Column, String
+from sqlalchemy.orm import relationship
 from enum import Enum
 import uuid
 
@@ -23,6 +24,7 @@ class UserModel(Base):
     is_active = Column(Boolean(), default=False)
     hashed_password = Column(String, nullable=False)
     roles = Column(ARRAY(String), nullable=False)
+    words = relationship("words", back_populates="words")
 
     @property
     def is_superadmin(self) -> bool:
