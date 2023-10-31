@@ -1,7 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Union
 from fastapi import APIRouter, Depends, Request
-from starlette.authentication import UnauthenticatedUser
 
 from .schemas import CreateUserRequest, ResponseUser
 from .dals import UserDAL

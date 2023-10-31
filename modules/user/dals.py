@@ -1,6 +1,5 @@
 from utils.hasher import Hasher
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import HTTPException, status
 
 from .models import UserModel, PortalRole
 from utils.user_issues import check_user_by_email_or_id_in_db, RaiseUpByUserCondition
