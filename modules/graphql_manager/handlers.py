@@ -1,18 +1,14 @@
-from fastapi import Depends
-
 import strawberry
-from strawberry.types import Info
 from strawberry.fastapi import GraphQLRouter
-from modules.words.handlers import Query as Query_words
+
+
+from modules.words.handlers import Query as Query_words, Mutation as Mutation_words
 from utils.context import get_context
 
 
 @strawberry.type
-class Mutation:
-    @strawberry.mutation
-    def create_flavour(self, name: str, info: Info) -> bool:
-
-        return True
+class Mutation(Mutation_words):
+    pass
 
 
 @strawberry.type

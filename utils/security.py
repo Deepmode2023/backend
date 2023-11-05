@@ -22,21 +22,24 @@ class JWTAuth(BasePermission):
     message = "You have not been authenticated. You do not have access to this source."
 
     async def authenticate(self, connect):
-        guest = AuthCredentials(['unauthenticated']), UnauthenticatedUser()
+        if connect.get("path") in "/api/graphql":
+            return None
+        else:
+            guest = AuthCredentials(['unauthenticated']), UnauthenticatedUser()
 
-        if 'authorization' not in connect.headers:
-            return guest
+            if 'authorization' not in connect.headers:
+                return guest
 
-        token_raw = connect.headers.get('authorization', None)
-        token = get_token_hash(token_raw=token_raw)
+            token_raw = connect.headers.get('authorization', None)
+            token = get_token_hash(token_raw=token_raw)
 
-        if token == None:
-            return guest
-        try:
-            user = await get_current_user(token=token)
-            return AuthCredentials(['authenticated']), user
-        except HTTPException:
-            return guest
+            if token == None:
+                return guest
+            try:
+                user = await get_current_user(token=token)
+                return AuthCredentials(['authenticated']), user
+            except HTTPException:
+                return guest
 
     async def has_permission(self, source: Any, info: Info, **kwargs,) -> bool:
         token_raw = info.context.get_raw_token
@@ -90,6 +93,7 @@ def decode_jwt_token(token: str) -> dict:
     try:
         decoded_dict = jwt.decode(
             token=token, key=settings.SECRET_KEY, algorithms=settings.ALGORITHM)
+
     except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token errors.")

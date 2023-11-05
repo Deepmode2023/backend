@@ -1,8 +1,8 @@
 """Create words table
 
-Revision ID: 097f1725f822
+Revision ID: 5afe37d649fc
 Revises: a7f95ea5b26d
-Create Date: 2023-10-31 22:02:03.299318
+Create Date: 2023-11-05 09:02:12.614015
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = '097f1725f822'
+revision: str = '5afe37d649fc'
 down_revision: Union[str, None] = 'a7f95ea5b26d'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -24,13 +24,15 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('slug', sa.String(), nullable=True),
     sa.Column('name', sa.String(), nullable=False),
-    sa.Column('description', sa.String(), nullable=True),
+    sa.Column('translate', sa.String(), nullable=False),
+    sa.Column('example', sa.String(), nullable=True),
     sa.Column('synonym', postgresql.ARRAY(sa.String()), nullable=True),
     sa.Column('part_of_speach', sa.String(), nullable=False),
     sa.Column('image_url', sa.String(), nullable=True),
     sa.Column('user_id', sa.UUID(), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('name')
     )
     # ### end Alembic commands ###
 
