@@ -24,7 +24,10 @@ class UserModel(Base):
     is_active = Column(Boolean(), default=False)
     hashed_password = Column(String, nullable=False)
     roles = Column(ARRAY(String), nullable=False)
-    words = relationship("words", back_populates="words")
+    words = relationship("WordModel", back_populates='user')
+
+    def __repr__(self):
+        return f'UserModel(user_id={self.user_id}, email={self.email})'
 
     @property
     def is_superadmin(self) -> bool:

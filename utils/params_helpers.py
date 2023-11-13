@@ -9,5 +9,12 @@ def common_params(pagination: int = 0, skip: int = 0, limit: int = 10) -> dict:
 @strawberry.input
 class CommonParams:
     pagination: Optional[int] = 1
-    limit: Optional[int] = 10
+    limit: Optional[int] = 50
     skip: Optional[int] = 0
+
+
+@strawberry.type
+class ReturnedWithCommanParams:
+    limmit: int
+    pagination: int
+    skip: int

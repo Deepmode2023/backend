@@ -1,0 +1,5 @@
+GET_WORDS = {"name": "GetWords", "descriptions": "This point is used to select all words from the database. This point by default gives 50 words starting from 1-50. If you want to change this, set the `common_params` `limit, skip, pagination`.You can also select words by `name` or `slug`"}
+CREATE_WORD = {"name": "CreateWord", "descriptions": "You can create a word that can be visible to all user. If the word was not correctly created the Administrator has the right to delete the word.  If you regularly create bad words, the administrator will remove your access to this resource."}
+UPDATE_WORD = {"name": "UpdateWord", "descriptions": "If you are a regular user, you can only change the `synonym, slug, example` fields. If you created the word you can change all fields of the word `name, part_of_speach, translate, slug, example, synonym, image_url`."}
+DELETE_WORD = {"name": "DeleteWord",
+               "descriptions": "You can delete a word if you created the word or are an Administrator."}
