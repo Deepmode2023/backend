@@ -26,6 +26,9 @@ class UserModel(Base):
     roles = Column(ARRAY(String), nullable=False)
     words = relationship("WordModel", back_populates='user')
 
+    def __repr__(self):
+        return f'UserModel(user_id={self.user_id}, email={self.email})'
+
     @property
     def is_superadmin(self) -> bool:
         return PortalRole.ROLE_PORTAL_SUPERADMIN in self.roles

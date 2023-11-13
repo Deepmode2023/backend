@@ -4,6 +4,9 @@ from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 
 
+from .exeptions import NotFieldExist
+
+
 class WordModel(Base):
     __tablename__ = "words"
 
@@ -18,10 +21,13 @@ class WordModel(Base):
     user_id = Column(UUID, ForeignKey("users.user_id"))
     user = relationship("UserModel", back_populates='words')
 
+    def __repr__(self):
+        return f'WordModel(id={self.id}, name={self.name})'
+
     @property
     def toJson(self):
         return {
-            "id": str(self.id),
+            "id": int(self.id),
             "name": self.name,
             "slug": self.slug,
             "translate": self.translate,
@@ -30,3 +36,9 @@ class WordModel(Base):
             "part_of_speach": self.part_of_speach,
             "image_url": self.image_url
         }
+
+    def __getitem__(self, item):
+        word = self.toJson.get(item, None)
+        if word == None:
+            raise NotFieldExist()
+        return word

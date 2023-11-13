@@ -31,6 +31,9 @@ class Word:
     image_url: Optional[str] = None
 
 
+# GET WORDS BLOCK
+
+
 @strawberry.type
 class ReturnedWordsType(ReturnedWithCommanParams):
     data: list[Word]
@@ -42,6 +45,13 @@ class ReturnedWordsFail:
     status_code: int
 
 
+ReturnWordsExtendType = Annotated[Union[ReturnedWordsType,
+                                        ReturnedWordsFail], strawberry.union("ReturnedWords")]
+# END GET WORDS BLOCK
+
+# CREATE WORD BLOCK
+
+
 @strawberry.type
 class ReturnWordCreatedFail(BasicExeptionsSchema):
     pass
@@ -49,12 +59,45 @@ class ReturnWordCreatedFail(BasicExeptionsSchema):
 
 @strawberry.type
 class ReturnWordCreatedType(BasicExeptionsSchema):
-    word: Word
+    data: list[Word]
 
 
-ReturnCreatedWordExtend = Annotated[
+ReturnCreatedWordExtendType = Annotated[
     Union[ReturnWordCreatedType, ReturnWordCreatedFail], strawberry.union("ReturnWordCreated")]
+# END CREATE WORD BLOCK
+
+# UPDATE WORD BLOCK
 
 
-ReturnedWordsExtend = Annotated[Union[ReturnedWordsType,
-                                      ReturnedWordsFail], strawberry.union("ReturnedWords")]
+@strawberry.type
+class ReturnWordUpdatedType(BasicExeptionsSchema):
+    data: list[Word]
+
+
+@strawberry.type
+class ReturnWordUpdatedFail(BasicExeptionsSchema):
+    pass
+
+
+ReturnUpdatedWordExtendType = Annotated[
+    Union[ReturnWordUpdatedType, ReturnWordUpdatedFail], strawberry.union("ReturnWordUpgrade")]
+
+# END UPDATE WORD BLOCK
+
+
+# DELETE WORD BLOCK
+
+@strawberry.type
+class ReturnWordDeleteType(BasicExeptionsSchema):
+    data: Word
+
+
+@strawberry.type
+class ReturnWordDeleteFail(BasicExeptionsSchema):
+    pass
+
+
+ReturnDeleteWordExtendType = Annotated[
+    Union[ReturnWordDeleteType, ReturnWordDeleteFail], strawberry.union("ReturnWordDelete")]
+
+# END DELETE WORD BLOCK

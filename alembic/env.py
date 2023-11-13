@@ -8,8 +8,8 @@ from alembic import context
 
 from settings import settings
 from db.models import Base
-from modules.user.models import UserModel
-from modules.words.models import WordModel
+from src.user.models import UserModel
+from src.words.models import WordModel
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

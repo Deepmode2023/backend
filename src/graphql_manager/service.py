@@ -2,7 +2,7 @@ import strawberry
 from strawberry.fastapi import GraphQLRouter
 
 
-from modules.words.handlers import Query as Query_words, Mutation as Mutation_words
+from src.words.service import Query as Query_words, Mutation as Mutation_words
 from utils.context import get_context
 
 
