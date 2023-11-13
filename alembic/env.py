@@ -7,9 +7,11 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 
 from settings import settings
-from db.models import Base
 from src.user.models import UserModel
 from src.words.models import WordModel
+from src.shared_preference.models import SharedPreferenceModel
+
+from db.models import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -26,6 +28,7 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
+
 config.set_main_option(
     "sqlalchemy.url", settings.DATABASE_URL_async)
 

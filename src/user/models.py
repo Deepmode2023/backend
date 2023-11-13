@@ -1,9 +1,8 @@
 from sqlalchemy.dialects.postgresql import ARRAY, UUID
 from sqlalchemy import Boolean, Column, String
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, declarative_base
 from enum import Enum
 import uuid
-
 
 from db.models import Base
 
@@ -25,6 +24,8 @@ class UserModel(Base):
     hashed_password = Column(String, nullable=False)
     roles = Column(ARRAY(String), nullable=False)
     words = relationship("WordModel", back_populates='user')
+    shared_preference = relationship(
+        "SharedPreferenceModel", back_populates="shared_preference")
 
     def __repr__(self):
         return f'UserModel(user_id={self.user_id}, email={self.email})'
