@@ -5,6 +5,7 @@ from sqlalchemy.orm import relationship
 
 
 from .exeptions import NotFieldExist
+from db.models import Base
 
 
 class WordModel(Base):

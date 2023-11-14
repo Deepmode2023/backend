@@ -13,5 +13,5 @@ def contains_with_list(list_contains: list[str], compare_list: list[str]) -> boo
     return True if compare_condition > 0 else False
 
 
-def build_kwargs_not_none(**kwargs):
-    return {key: value for key, value in kwargs.items() if value != None and value != ''}
+def build_kwargs_not_none(except_kwargs: list[str] = [], **kwargs):
+    return {key: value for key, value in kwargs.items() if value != None and value != '' and key not in except_kwargs}
