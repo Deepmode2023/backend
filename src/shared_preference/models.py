@@ -18,8 +18,16 @@ class SharedPreferenceModel(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     theme = Column(String, nullable=False, default=ThemeColor.WHITE_THEME)
     shared_mode = Column(Boolean, nullable=False, default=False)
-    user_id = Column(UUID, ForeignKey("users.user_id"))
-    user = relationship("UserModel", back_populates='words')
+    user = relationship("UserModel", back_populates='shared_preference')
+    user_id = Column(UUID, ForeignKey("users.user_id"), unique=True)
 
     def __repr__(self):
-        return f'SharedPreferenceModel(id={self.id}, name={self.name})'
+        return f'SharedPreferenceModel(id={self.id}, user_id={self.user_id})'
+
+    @property
+    def to_json(self):
+        return {
+            "theme": self.theme,
+            "shared_mode": self.shared_mode,
+            "user_id": self.user_id
+        }

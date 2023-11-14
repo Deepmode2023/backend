@@ -1,8 +1,8 @@
 """created shared preference table
 
-Revision ID: ae95a52c851d
+Revision ID: d12e4ad52c1d
 Revises: 5afe37d649fc
-Create Date: 2023-11-13 14:51:45.141223
+Create Date: 2023-11-13 18:38:22.984482
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'ae95a52c851d'
+revision: str = 'd12e4ad52c1d'
 down_revision: Union[str, None] = '5afe37d649fc'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -26,7 +26,8 @@ def upgrade() -> None:
     sa.Column('shared_mode', sa.Boolean(), nullable=False),
     sa.Column('user_id', sa.UUID(), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['users.user_id'], ),
-    sa.PrimaryKeyConstraint('id')
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('user_id')
     )
     # ### end Alembic commands ###
 

@@ -1,10 +1,11 @@
 from sqlalchemy.dialects.postgresql import ARRAY, UUID
 from sqlalchemy import Boolean, Column, String
-from sqlalchemy.orm import relationship, declarative_base
+from sqlalchemy.orm import relationship
 from enum import Enum
 import uuid
 
 from db.models import Base
+from src.shared_preference.models import SharedPreferenceModel
 
 
 class PortalRole(str, Enum):
@@ -25,7 +26,7 @@ class UserModel(Base):
     roles = Column(ARRAY(String), nullable=False)
     words = relationship("WordModel", back_populates='user')
     shared_preference = relationship(
-        "SharedPreferenceModel", back_populates="shared_preference")
+        SharedPreferenceModel, back_populates="user")
 
     def __repr__(self):
         return f'UserModel(user_id={self.user_id}, email={self.email})'

@@ -11,6 +11,7 @@ from strawberry.permission import BasePermission
 from src.user.models import UserModel, PortalRole
 from .user_issues import check_user_by_email_or_id_in_db
 from utils.basic import contains_with_list
+from core.exeptions.ExeptionsSchema import NoValidTokenRaw
 
 
 from settings import settings
@@ -56,13 +57,19 @@ class JWTAuth(BasePermission):
 
 
 def get_token_hash(token_raw: str) -> str:
-    TOKEN_HASH_POSITION = 1
+    try:
+        TOKEN_HASH_POSITION = 1
 
-    token = token_raw.split(' ')
-    token = token[TOKEN_HASH_POSITION] if 0 <= TOKEN_HASH_POSITION < len(
-        token) else None
+        token = token_raw.split(' ')
+        if len(token) > 1 or token_raw is "Bearer":
+            token = token[TOKEN_HASH_POSITION] if 0 <= TOKEN_HASH_POSITION < len(
+                token) else None
 
-    return token
+            return token
+        else:
+            return token_raw
+    except Exception:
+        raise NoValidTokenRaw
 
 
 async def get_current_user(token: str = Depends(oauth2_schema)):
@@ -121,6 +128,7 @@ def access_decorator(low_function):
 
     async def wrapper(*args, **kwargs):
         user_metadata = await get_user_metadata(token_raw=kwargs.get("token_raw"))
+
         is_admin = contains_with_list(list_contains=user_metadata.roles,
                                       compare_list=ACCESS_ROLES)
         return await low_function(user=user_metadata, is_admin=is_admin, *args, **kwargs)

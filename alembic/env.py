@@ -7,9 +7,10 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 from alembic import context
 
 from settings import settings
+from src.shared_preference.models import SharedPreferenceModel
 from src.user.models import UserModel
 from src.words.models import WordModel
-from src.shared_preference.models import SharedPreferenceModel
+
 
 from db.models import Base
 
