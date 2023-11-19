@@ -1,12 +1,3 @@
-import strawberry
-from fastapi import status
-
-
-@strawberry.type
-class BasicExeptionsSchema:
-    details: str
-    status_code: int
-
 
 class NoValidTokenRaw(Exception):
     def __str__(self) -> str:
@@ -44,7 +35,7 @@ class DontExistItemInsideDB(Exception):
         return "This object does not exist in the database."
 
 
-class UnknownExeptions(Exception):
+class UnknownExceptions(Exception):
     def __str__(self) -> str:
         return "You have encountered an unknown error. We will contact you as soon as we have resolved this issue."
 

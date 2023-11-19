@@ -3,7 +3,7 @@ from typing import Optional, Union, Annotated
 from dataclasses import field
 from enum import Enum
 
-from core.exeptions.ExeptionsSchema import BasicExeptionsSchema
+from core.schema.schemas import BasicExeptionsSchema
 from utils.params_helpers import ReturnedWithCommanParams
 
 
