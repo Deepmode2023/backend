@@ -1,5 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, status
 from starlette.middleware.authentication import AuthenticationMiddleware
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 
 from src.shared_preference.service import preference_router
 from src.auth.service import auth_router
@@ -10,6 +12,7 @@ from utils.security import JWTAuth
 
 
 main_app = FastAPI(title="Deepmode")
+
 
 main_app.add_middleware(AuthenticationMiddleware, backend=JWTAuth(),)
 main_app.include_router(auth_router, prefix="/api/auth", tags=["Auth"])
