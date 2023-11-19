@@ -1,3 +1,11 @@
+import strawberry
+
+
+@strawberry.type
+class BasicExeptionsSchema:
+    details: str
+    status: int
+
 
 class NoValidTokenRaw(Exception):
     def __str__(self) -> str:
@@ -6,6 +14,15 @@ class NoValidTokenRaw(Exception):
     @property
     def get_message(self) -> str:
         return "No valid token."
+
+
+class AlreadyExistInDB(Exception):
+    def __str__(self) -> str:
+        return "Already exists in the database!"
+
+    @property
+    def get_message(self) -> str:
+        return "Already exists in the database!"
 
 
 class DoNotUpdateFieldsInDB(Exception):

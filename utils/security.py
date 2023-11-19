@@ -11,7 +11,7 @@ from strawberry.permission import BasePermission
 from src.user.models import UserModel, PortalRole
 from .user_issues import check_user_by_email_or_id_in_db
 from utils.basic import contains_with_list
-from core.exeptions.ExeptionsSchema import NoValidTokenRaw
+from core.exeptions.schemas import NoValidTokenRaw
 
 
 from settings import settings

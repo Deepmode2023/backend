@@ -3,7 +3,8 @@ from typing import Optional, Union, Annotated
 from dataclasses import field
 from enum import Enum
 
-from core.schema.schemas import BasicExeptionsSchema
+from core.exeptions.schemas import BasicExeptionsSchema
+from core.schema.schemas import TReturnedFailed
 from utils.params_helpers import ReturnedWithCommanParams
 
 
@@ -39,22 +40,11 @@ class ReturnedWordsType(ReturnedWithCommanParams):
     data: list[Word]
 
 
-@strawberry.type
-class ReturnedWordsFail:
-    details: str
-    status_code: int
-
-
 ReturnWordsExtendType = Annotated[Union[ReturnedWordsType,
-                                        ReturnedWordsFail], strawberry.union("ReturnedWords")]
+                                        TReturnedFailed], strawberry.union("ReturnedWords")]
 # END GET WORDS BLOCK
 
 # CREATE WORD BLOCK
-
-
-@strawberry.type
-class ReturnWordCreatedFail(BasicExeptionsSchema):
-    pass
 
 
 @strawberry.type
@@ -63,7 +53,7 @@ class ReturnWordCreatedType(BasicExeptionsSchema):
 
 
 ReturnCreatedWordExtendType = Annotated[
-    Union[ReturnWordCreatedType, ReturnWordCreatedFail], strawberry.union("ReturnWordCreated")]
+    Union[ReturnWordCreatedType, TReturnedFailed], strawberry.union("ReturnWordCreated")]
 # END CREATE WORD BLOCK
 
 # UPDATE WORD BLOCK
@@ -74,13 +64,8 @@ class ReturnWordUpdatedType(BasicExeptionsSchema):
     data: list[Word]
 
 
-@strawberry.type
-class ReturnWordUpdatedFail(BasicExeptionsSchema):
-    pass
-
-
 ReturnUpdatedWordExtendType = Annotated[
-    Union[ReturnWordUpdatedType, ReturnWordUpdatedFail], strawberry.union("ReturnWordUpgrade")]
+    Union[ReturnWordUpdatedType, TReturnedFailed], strawberry.union("ReturnWordUpgrade")]
 
 # END UPDATE WORD BLOCK
 
@@ -92,12 +77,7 @@ class ReturnWordDeleteType(BasicExeptionsSchema):
     data: Word
 
 
-@strawberry.type
-class ReturnWordDeleteFail(BasicExeptionsSchema):
-    pass
-
-
 ReturnDeleteWordExtendType = Annotated[
-    Union[ReturnWordDeleteType, ReturnWordDeleteFail], strawberry.union("ReturnWordDelete")]
+    Union[ReturnWordDeleteType, TReturnedFailed], strawberry.union("ReturnWordDelete")]
 
 # END DELETE WORD BLOCK
