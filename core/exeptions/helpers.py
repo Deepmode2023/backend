@@ -1,7 +1,6 @@
 from . import schemas as exeptions
 from fastapi import status
 from core.schema.schemas import TReturnedModel, TReturnedFailed
-from pydantic import ValidationError
 from functools import wraps
 
 

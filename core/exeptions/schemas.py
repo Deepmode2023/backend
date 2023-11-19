@@ -9,11 +9,11 @@ class BasicExeptionsSchema:
 
 class NoValidTokenRaw(Exception):
     def __str__(self) -> str:
-        return "No valid token."
+        return "Your token is not valid. You are denied access!"
 
     @property
     def get_message(self) -> str:
-        return "No valid token."
+        return "Your token is not valid. You are denied access!"
 
 
 class AlreadyExistInDB(Exception):
@@ -27,35 +27,35 @@ class AlreadyExistInDB(Exception):
 
 class DoNotUpdateFieldsInDB(Exception):
     def __str__(self) -> str:
-        return "We haven't been able to update fields in database."
+        return "We haven't been able to update fields in database!"
 
     @property
     def get_message(self) -> str:
-        return "We haven't been able to update fields in database."
+        return "We haven't been able to update fields in database!"
 
 
 class YouDontHaveAccessExeptions(Exception):
     def __str__(self) -> str:
-        return "You don't have permission to delete words."
+        return "You don't have permission to delete words!"
 
     @property
     def get_message(self) -> str:
-        return "You don't have permission to delete words."
+        return "You don't have permission to delete words!"
 
 
 class DontExistItemInsideDB(Exception):
     def __str__(self) -> str:
-        return "This object does not exist in the database."
+        return "This object does not exist in the database!"
 
     @property
     def get_message(self) -> str:
-        return "This object does not exist in the database."
+        return "This object does not exist in the database!"
 
 
 class UnknownExceptions(Exception):
     def __str__(self) -> str:
-        return "You have encountered an unknown error. We will contact you as soon as we have resolved this issue."
+        return "You have encountered an unknown error. We will contact you as soon as we have resolved this issue!"
 
     @property
     def get_message(self) -> str:
-        return "You have encountered an unknown error. We will contact you as soon as we have resolved this issue."
+        return "You have encountered an unknown error. We will contact you as soon as we have resolved this issue!"

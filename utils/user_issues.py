@@ -41,6 +41,6 @@ async def check_credential_user(email: str, password: str) -> Union[UserModel, N
 
     if not hasher_instance.verify_password(plain_password=password, hashed_password=user.hashed_password):
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                            detail="Invalid credential.", headers={"WWW-Authenticate": "Bearer"})
+                            detail="Your token is not valid. You are denied access!", headers={"WWW-Authenticate": "Bearer"})
 
     return user

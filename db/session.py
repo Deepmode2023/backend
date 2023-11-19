@@ -2,7 +2,6 @@ from contextlib import asynccontextmanager
 from typing import Generator
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
-import asyncio
 
 from settings import settings
 
@@ -18,19 +17,8 @@ async_session = sessionmaker(
     engine, expire_on_commit=False, class_=AsyncSession)
 
 
-async def get_db() -> Generator:
-    """Dependency for getting async session"""
-    try:
-        print("START SESSION <====+++++ START SESSION")
-        session: AsyncSession = async_session()
-        yield session
-    finally:
-        await session.close()
-        print("END SESSION <====+++++ END SESSION")
-
-
 @asynccontextmanager
-async def get_session():
+async def get_session() -> Generator:
     session_instance = None
     try:
         async with async_session() as s:
