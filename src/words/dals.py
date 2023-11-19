@@ -6,7 +6,7 @@ from utils.security import access_decorator
 from utils.params_helpers import CommonParams
 from .models import WordModel
 from .schema import PartOfSpeach
-from core.exeptions import ExeptionsSchema as core_exeptions
+from core.exeptions import schemas as core_exeptions
 
 from .helpers import return_words_kwarg_after_check_permission
 
@@ -16,7 +16,7 @@ class WordDAL:
         self.db_session = db_session
 
     async def get_words(self, commonParams: CommonParams) -> list[WordModel]:
-        return await self.db_session.scalars(select(WordModel).limit(commonParams.limit).offset(commonParams.skip))
+        return await self.db_session.scalars(select(WordModel).limit(commonParams.limmit).offset(commonParams.skip))
 
     async def get_words_by_id(self, id: int) -> Union[WordModel, None]:
         word = await self.db_session.scalars(select(WordModel).where(WordModel.id == id))
@@ -27,15 +27,17 @@ class WordDAL:
             WordModel.name.ilike(f"%{name}%") if name else False,
             WordModel.slug.ilike(f"%{slug}%") if slug else False
         )
-        return await self.db_session.scalars(select(WordModel).where(filter_condition).limit(commonParams.limit).offset(commonParams.skip))
+        return await self.db_session.scalars(select(WordModel).where(filter_condition).limit(commonParams.limmit).offset(commonParams.skip))
 
     @access_decorator
     async def create_word(self, name: str, translate: str, part_of_speach: PartOfSpeach, slug: str, example: str, synonym: list[str], image_url: Union[str, None], **kwargs) -> WordModel:
         word = WordModel(user=kwargs.get("user"), slug=str.lower(slug), name=str.lower(name), translate=str.lower(translate), synonym=synonym,
                          example=str.lower(example), part_of_speach=part_of_speach, image_url=image_url)
-        self.db_session.add(word)
-        await self.db_session.commit()
-
+        try:
+            self.db_session.add(word)
+            await self.db_session.commit()
+        except Exception:
+            raise core_exeptions.AlreadyExistInDB
         return word
 
     @access_decorator

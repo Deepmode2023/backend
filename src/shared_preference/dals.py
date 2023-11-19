@@ -4,7 +4,7 @@ from utils.security import access_decorator
 from .models import SharedPreferenceModel
 
 from utils.basic import build_kwargs_not_none
-from core.exeptions.ExeptionsSchema import DoNotUpdateFieldsInDB
+from core.exeptions.schemas import DoNotUpdateFieldsInDB
 from core.exeptions.helpers import exeption_handling_decorator
 
 

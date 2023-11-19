@@ -8,7 +8,7 @@ from .models import ThemeColor
 from core.schema.schemas import TReturnedModel
 from .schemas import ReturnedSharedPreference
 
-from core.exeptions.ExeptionsSchema import UnknownExceptions
+from core.exeptions.schemas import UnknownExceptions
 
 from core.exeptions.helpers import exeption_handling_decorator
 

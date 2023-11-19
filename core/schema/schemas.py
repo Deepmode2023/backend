@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import Union, Dict, Any
-import strawberry
+from core.exeptions.schemas import BasicExeptionsSchema
 
 
 class TReturnedModel(BaseModel):
@@ -9,7 +9,5 @@ class TReturnedModel(BaseModel):
     data:  Union[list[Dict[str, Any]], None]
 
 
-@strawberry.type
-class BasicExeptionsSchema:
-    details: str
-    status_code: int
+class TReturnedFailed(BasicExeptionsSchema):
+    pass
