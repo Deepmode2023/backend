@@ -5,13 +5,12 @@ from typing import Optional, Union
 from utils.params_helpers import CommonParams
 from utils.math import calculate_pagination_page
 from utils.security import JWTAuth
-from db.session import get_db, get_session
+from db.session import get_session
 from fastapi import status as StatusFastApi
 
 from . import constants as constantPoint
 from . import schema as SchemaInstanceType
 from .dals import WordDAL
-from core.exeptions.schemas import UnknownExceptions
 from core.exeptions.helpers import exeption_handling_decorator_graph_ql
 
 
@@ -24,7 +23,7 @@ class Mutation:
                           translate: str, slug: Optional[str] = "", example: Optional[str] = "",
                           synonym: Optional[str] = [], image_url: Optional[str] = None) -> SchemaInstanceType.ReturnCreatedWordExtendType:
         try:
-            async with await anext(get_db()) as db_session:
+            async with get_session() as db_session:
                 dals = WordDAL(db_session=db_session)
                 created_word_instance = await dals.create_word(token_raw=info.context.get_raw_token, translate=translate, slug=slug,
                                                                name=name, example=example, synonym=synonym,
