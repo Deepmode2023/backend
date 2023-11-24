@@ -18,7 +18,7 @@ def raise_email_with_detail(detail: str, headers: dict = {"WWW-Authenticate": "B
                          detail=detail, headers=headers)
 
 
-async def check_user_by_email_or_id_in_db(email: Union[str, None] = None, user_id: Union[str, None] = None,  raise_up_by_user_condition: RaiseUpByUserCondition = RaiseUpByUserCondition.EXIST) -> Union[UserModel, None]:
+async def check_user_by_email_or_id_in_db(email: Union[str, None] = None, user_id: Union[str, None] = None,  raise_up_by_user_condition: RaiseUpByUserCondition = RaiseUpByUserCondition.EXIST) -> UserModel:
     async with get_session() as db_session:
         user = await db_session.scalars(select(UserModel).filter(
             or_(UserModel.email == email, UserModel.user_id == user_id)

@@ -1,7 +1,18 @@
 from pydantic import BaseModel, EmailStr
-from typing import Union
+from pydantic.dataclasses import dataclass
+from fastapi import Form
+from typing import Union, Optional, Annotated
 from uuid import UUID
 from enum import Enum
+
+
+@dataclass
+class UpdateUserRequest(BaseModel):
+    name: Annotated[str, Form()] = None
+    surname: Annotated[str, Form()] = None
+    password: Annotated[str, Form()] = None
+    email: Annotated[EmailStr, Form()] = None
+    avatar: Annotated[bytes, Form()] = None
 
 
 class CreateUserRequest(BaseModel):
@@ -22,7 +33,7 @@ class ResponseUser(BaseModel):
 class MessageResponse(BaseModel):
     status_code: int
     detail: str
-    header: Union[str, None]
+    header: Optional[str] = None
 
 
 class ErrorResonseUser(BaseModel):

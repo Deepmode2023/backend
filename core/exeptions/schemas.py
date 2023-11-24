@@ -34,13 +34,28 @@ class DoNotUpdateFieldsInDB(Exception):
         return "We haven't been able to update fields in database!"
 
 
-class YouDontHaveAccessExeptions(Exception):
-    def __str__(self) -> str:
-        return "You don't have permission to delete words!"
+class FailedCreate(Exception):
+    def __init__(self, issue: str = " "):
+        self.issue = f"a {issue}"
+
+    def __str__(self, ) -> str:
+        return f"You failed to create {self.issue}! Try again in a little while."
 
     @property
     def get_message(self) -> str:
-        return "You don't have permission to delete words!"
+        return f"You failed to create {self.issue}! Try again in a little while."
+
+
+class YouDontHaveAccessExeptions(Exception):
+    def __init__(self, reason: str = "!"):
+        self.reason = reason
+
+    def __str__(self) -> str:
+        return f"You don't have permission {self.reason}"
+
+    @property
+    def get_message(self,) -> str:
+        return f"You don't have permission {self.reason}"
 
 
 class DontExistItemInsideDB(Exception):
@@ -59,3 +74,12 @@ class UnknownExceptions(Exception):
     @property
     def get_message(self) -> str:
         return "You have encountered an unknown error. We will contact you as soon as we have resolved this issue!"
+
+
+class ThisFileIsNotPicture (Exception):
+    def __str__(self) -> str:
+        return "This file is not a png, jpg, jpeg, wepb image!"
+
+    @property
+    def get_message(self) -> str:
+        return "This file is not a png, jpg, jpeg, wepb image!"

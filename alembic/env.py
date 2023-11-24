@@ -10,6 +10,7 @@ from settings import settings
 from src.shared_preference.models import SharedPreferenceModel
 from src.user.models import UserModel
 from src.words.models import WordModel
+from src.spaced_repetitions.models import SpacedRepetitionsModel
 
 
 from db.models import Base

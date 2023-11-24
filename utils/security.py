@@ -61,7 +61,7 @@ def get_token_hash(token_raw: str) -> str:
         TOKEN_HASH_POSITION = 1
 
         token = token_raw.split(' ')
-        if len(token) > 1 or token_raw is "Bearer":
+        if len(token) > 1 or token_raw.__contains__("Bearer"):
             token = token[TOKEN_HASH_POSITION] if 0 <= TOKEN_HASH_POSITION < len(
                 token) else None
 
@@ -72,12 +72,10 @@ def get_token_hash(token_raw: str) -> str:
         raise NoValidTokenRaw
 
 
-async def get_current_user(token: str = Depends(oauth2_schema)):
+async def get_current_user(token: str = Depends(oauth2_schema)) -> UserModel:
     payload = decode_jwt_token(token=token)
 
-    user_id = payload.get("user", None).get("user_id", None)
-    if not user_id:
-        return None
+    user_id = payload.get("user").get("user_id")
 
     return await check_user_by_email_or_id_in_db(user_id=user_id)
 
@@ -123,13 +121,18 @@ async def get_user_metadata(token_raw: str):
 
 
 def access_decorator(low_function):
-    ACCESS_ROLES = [PortalRole.ROLE_PORTAL_ADMIN,
-                    PortalRole.ROLE_PORTAL_SUPERADMIN]
 
     async def wrapper(*args, **kwargs):
         user_metadata = await get_user_metadata(token_raw=kwargs.get("token_raw"))
 
-        is_admin = contains_with_list(list_contains=user_metadata.roles,
-                                      compare_list=ACCESS_ROLES)
+        is_admin = is_admin_checked(user_metadata.roles)
         return await low_function(user=user_metadata, is_admin=is_admin, *args, **kwargs)
     return wrapper
+
+
+def is_admin_checked(roles: list[str]) -> bool:
+    ACCESS_ROLES = [PortalRole.ROLE_PORTAL_ADMIN,
+                    PortalRole.ROLE_PORTAL_SUPERADMIN]
+
+    return contains_with_list(list_contains=roles,
+                              compare_list=ACCESS_ROLES)

@@ -30,9 +30,9 @@ class WordDAL:
         return await self.db_session.scalars(select(WordModel).where(filter_condition).limit(commonParams.limmit).offset(commonParams.skip))
 
     @access_decorator
-    async def create_word(self, name: str, translate: str, part_of_speach: PartOfSpeach, slug: str, example: str, synonym: list[str], image_url: Union[str, None], **kwargs) -> WordModel:
+    async def create_word(self, name: str, translate: str, part_of_speach: PartOfSpeach, slug: str, example: str, synonym: list[str], image_url: Union[str, None], slang: str, ** kwargs) -> WordModel:
         word = WordModel(user=kwargs.get("user"), slug=str.lower(slug), name=str.lower(name), translate=str.lower(translate), synonym=synonym,
-                         example=str.lower(example), part_of_speach=part_of_speach, image_url=image_url)
+                         example=str.lower(example), part_of_speach=part_of_speach, image_url=image_url, slang=slang)
         try:
             self.db_session.add(word)
             await self.db_session.commit()
@@ -41,7 +41,7 @@ class WordDAL:
         return word
 
     @access_decorator
-    async def update_word(self, id: int, name: Union[str, None], translate:  Union[str, None], part_of_speach:  Union[PartOfSpeach, None], slug:  Union[str, None], example:  Union[str, None], synonym: Union[list[str], None], image_url: Union[str, None], **kwargs) -> WordModel:
+    async def update_word(self, id: int, slang: str, name: Union[str, None], translate:  Union[str, None], part_of_speach:  Union[PartOfSpeach, None], slug:  Union[str, None], example:  Union[str, None], synonym: Union[list[str], None], image_url: Union[str, None], **kwargs) -> WordModel:
         updated_word = await self.get_words_by_id(id=id)
 
         if updated_word == None:
@@ -51,7 +51,7 @@ class WordDAL:
             'user').user_id
 
         updated_kwargs = return_words_kwarg_after_check_permission(access_field_not_admin=['slug', "synonym",  "example"], is_admin=is_admin, name=name,
-                                                                   translate=translate, part_of_speach=part_of_speach, slug=slug, example=example, synonym=synonym, image_url=image_url)
+                                                                   translate=translate, part_of_speach=part_of_speach, slug=slug, example=example, synonym=synonym, image_url=image_url, slang=slang)
 
         word = await self.db_session.scalars(update(WordModel).where(
             WordModel.id == updated_word.id).values(**updated_kwargs).returning(WordModel))

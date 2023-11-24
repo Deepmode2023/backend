@@ -1,6 +1,8 @@
 from utils.hasher import Hasher
 from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Optional
 
+from utils.image import ImageModelBasic
 from .models import UserModel, PortalRole
 from utils.user_issues import check_user_by_email_or_id_in_db, RaiseUpByUserCondition
 from src.shared_preference.models import SharedPreferenceModel, ThemeColor
@@ -12,7 +14,7 @@ class UserDAL:
     def __init__(self, db_session: AsyncSession):
         self.db_session = db_session
 
-    async def create_user_account(self, name: str, surname: str, email: str, password: str) -> UserModel:
+    async def create_user_account(self, name: str, surname: str, email: str, password: str, avatar: Optional[bytes] = None) -> UserModel:
         await check_user_by_email_or_id_in_db(email=email, raise_up_by_user_condition=RaiseUpByUserCondition.NOT_EXIST)
         new_user = UserModel(name=name, surname=surname, email=email,
                              hashed_password=Hasher.get_password_hash(password), roles=[PortalRole.ROLE_PORTAL_USER])
@@ -22,3 +24,7 @@ class UserDAL:
         self.db_session.add_all([new_user, shared_preference_instance])
         await self.db_session.commit()
         return new_user
+
+    async def update_user_account(self, image_instance: ImageModelBasic, **kwargs):
+        print(image_instance)
+        return True

@@ -29,4 +29,5 @@ python-dotenv==1.0.0
 asyncpg==0.28.0
 greenlet==3.0.0
 pydantic[email]
+Pillow==10.1.0
 python-multipart==0.0.6

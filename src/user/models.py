@@ -5,7 +5,7 @@ from enum import Enum
 import uuid
 
 from db.models import Base
-from src.shared_preference.models import SharedPreferenceModel
+from src.spaced_repetitions.models import SpacedRepetitionsModel
 
 
 class PortalRole(str, Enum):
@@ -23,10 +23,16 @@ class UserModel(Base):
     email = Column(String, nullable=False, unique=True)
     is_active = Column(Boolean(), default=False)
     hashed_password = Column(String, nullable=False)
+    avatar_small = Column(String, nullable=True)
+    avatar_big = Column(String, nullable=True)
     roles = Column(ARRAY(String), nullable=False)
-    words = relationship("WordModel", back_populates='user')
+    user_words = relationship("WordModel", back_populates='user',
+                              cascade="all, delete-orphan")
     shared_preference = relationship(
-        SharedPreferenceModel, back_populates="user")
+        "SharedPreferenceModel", back_populates="user", cascade="all, delete-orphan")
+    spaced_repetitions = relationship(
+        SpacedRepetitionsModel, back_populates='user',
+        cascade="all, delete-orphan")
 
     def __repr__(self):
         return f'UserModel(user_id={self.user_id}, email={self.email})'
