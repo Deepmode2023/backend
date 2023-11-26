@@ -74,12 +74,3 @@ class UnknownExceptions(Exception):
     @property
     def get_message(self) -> str:
         return "You have encountered an unknown error. We will contact you as soon as we have resolved this issue!"
-
-
-class ThisFileIsNotPicture (Exception):
-    def __str__(self) -> str:
-        return "This file is not a png, jpg, jpeg, wepb image!"
-
-    @property
-    def get_message(self) -> str:
-        return "This file is not a png, jpg, jpeg, wepb image!"

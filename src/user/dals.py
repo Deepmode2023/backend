@@ -1,8 +1,11 @@
+from datetime import datetime
+
 from utils.hasher import Hasher
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Optional
+from sqlalchemy import update
+from typing import Optional, Union
 
-from utils.image import ImageModelBasic
+from utils.image import ImageCreaterModel, ReturnedImageCreaterModel, PathnameUrl
 from .models import UserModel, PortalRole
 from utils.user_issues import check_user_by_email_or_id_in_db, RaiseUpByUserCondition
 from src.shared_preference.models import SharedPreferenceModel, ThemeColor
@@ -25,6 +28,17 @@ class UserDAL:
         await self.db_session.commit()
         return new_user
 
-    async def update_user_account(self, image_instance: ImageModelBasic, **kwargs):
-        print(image_instance)
-        return True
+    async def update_user_account(self, me: UserModel, is_access: bool, image_instance: ImageCreaterModel, **kwargs) -> Union[UserModel, None]:
+        email = kwargs.get('email', None) if is_access else me.email
+
+        created_img: ReturnedImageCreaterModel = image_instance.create_image()
+        if created_img.is_create:
+            kwargs.update(**{"avatar_small": created_img.pathname.small,
+                          "avatar_big": created_img.pathname.big, "updated_account": datetime.utcnow()})
+
+        if email is not None:
+            updated_user = await self.db_session.scalars(update(UserModel).where(UserModel.email == email).values(
+                **kwargs).returning(UserModel))
+
+            await self.db_session.commit()
+            return updated_user.one_or_none()

@@ -7,17 +7,17 @@ from enum import Enum
 from fastapi import UploadFile
 
 
-from core.exeptions.schemas import ThisFileIsNotPicture, FailedCreate
+from core.exeptions.schemas import FailedCreate
 
 
 class PathnameUrl(BaseModel):
-    small_path: str
-    big_path: str
+    small: str
+    big: str
 
 
 class ReturnedImageCreaterModel(BaseModel):
     is_create: bool
-    pathname_url: Union[PathnameUrl, None]
+    pathname: Union[PathnameUrl, None]
 
 
 class SizeImage(str, Enum):
@@ -42,13 +42,12 @@ def is_contains_extension_accessed_image(filename: Union[str, None]) -> bool:
 
 
 class ImageModelBasic(BaseModel):
-    pathname_big: str = os.path.join(
-        os.getcwd(), f"static/pub_image/{SizeImage.BIG.value}")
-    pathname_small: str = os.path.join(
-        os.getcwd(), f"static/pub_image/{SizeImage.SMALL.value}")
+    pathname: PathnameUrl = PathnameUrl(small=os.path.join(
+        os.getcwd(), f"static/pub_image/{SizeImage.BIG.value}"), big=os.path.join(
+        os.getcwd(), f"static/pub_image/{SizeImage.SMALL.value}"))
 
     def __str__(self):
-        return f"{self.__class__.__name__}(pathname={self.pathname_big})"
+        return f"{self.__class__.__name__}(pathname={self.pathname})"
 
 
 class ImageCreaterModel(ImageModelBasic):
@@ -64,12 +63,12 @@ class ImageCreaterModel(ImageModelBasic):
 
     @property
     def check_directory_static(self):
-        if not os.path.exists(self.pathname_big):
-            os.makedirs(self.pathname_big)
-        if not os.path.exists(self.pathname_small):
-            os.makedirs(self.pathname_small)
+        if not os.path.exists(self.pathname.big):
+            os.makedirs(self.pathname.big)
+        if not os.path.exists(self.pathname.small):
+            os.makedirs(self.pathname.small)
 
-    async def create_image(self, scale_params: int = 5, width: Optional[int] = None, height: Optional[int] = None) -> ReturnedImageCreaterModel:
+    def create_image(self, scale_params: int = 5, width: Optional[int] = None, height: Optional[int] = None) -> ReturnedImageCreaterModel:
         POSITION_WIDTH_INSIDE_PILLOW_SIZE = 0
         POSITION_HEIGHT_INSIDE_PILLOW_SIZE = 1
         self.check_directory_static
@@ -81,8 +80,8 @@ class ImageCreaterModel(ImageModelBasic):
             if width != None or height != None:
                 big_image = big_image.resize((width, height))
 
-            small_path = f"{self.pathname_small}/{uuid4()}.webp"
-            big_path = f"{self.pathname_big}/{uuid4()}.webp"
+            small_path = f"{self.pathname.small}/{uuid4()}.webp"
+            big_path = f"{self.pathname.big}/{uuid4()}.webp"
 
             small_image = big_image.resize(
                 resize_option(scale_params=scale_params,
@@ -92,21 +91,29 @@ class ImageCreaterModel(ImageModelBasic):
             big_image.save(big_path, 'WEBP')
 
             return ReturnedImageCreaterModel(is_create=True,
-                                             pathname_url=PathnameUrl(small_path=small_path, big_path=big_path))
+                                             pathname=PathnameUrl(small=str(small_path), big=str(big_path)))
         else:
             raise FailedCreate(issue="picture")
 
     @property
     def get_pathname_cls(self) -> dict:
-        return {"small": self.pathname_small, "big": self.pathname_big}
+        return self.pathname
 
 
 class DeleterImages(ImageModelBasic):
-    def __init__(self, pathname_big: str, pathname_small: str):
-        self.pathname_big = pathname_big
-        self.pathname_small = pathname_small
+    def __init__(self, pathname: PathnameUrl):
+        self.pathname = pathname
 
 
 def resize_option(scale_params: int, width: int, height: int) -> tuple[int, int]:
     scale_params = scale_params if scale_params < 5 else 5
     return (round(width / scale_params), round(height / scale_params))
+
+
+class ThisFileIsNotPicture (Exception):
+    def __str__(self) -> str:
+        return "This file is not a png, jpg, jpeg, wepb image!"
+
+    @property
+    def get_message(self) -> str:
+        return "This file is not a png, jpg, jpeg, wepb image!"

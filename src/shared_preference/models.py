@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Boolean, ForeignKey, String, ForeignKeyConstraint
+from sqlalchemy import Column, Boolean, ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from enum import Enum
@@ -33,8 +33,3 @@ class SharedPreferenceModel(Base):
             "shared_mode": self.shared_mode,
             "user_id": self.user_id
         }
-
-
-ForeignKeyConstraint(
-    ["user_id"], ["users.user_id"], ondelete="CASCADE"
-)
