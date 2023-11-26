@@ -1,7 +1,8 @@
 from sqlalchemy.dialects.postgresql import ARRAY, UUID
-from sqlalchemy import Boolean, Column, String
+from sqlalchemy import Boolean, Column, String, DateTime
 from sqlalchemy.orm import relationship
 from enum import Enum
+from datetime import datetime
 import uuid
 
 from db.models import Base
@@ -23,9 +24,9 @@ class UserModel(Base):
     email = Column(String, nullable=False, unique=True)
     is_active = Column(Boolean(), default=False)
     hashed_password = Column(String, nullable=False)
+    roles = Column(ARRAY(String), nullable=False)
     avatar_small = Column(String, nullable=True)
     avatar_big = Column(String, nullable=True)
-    roles = Column(ARRAY(String), nullable=False)
     user_words = relationship("WordModel", back_populates='user',
                               cascade="all, delete-orphan")
     shared_preference = relationship(
@@ -33,6 +34,8 @@ class UserModel(Base):
     spaced_repetitions = relationship(
         SpacedRepetitionsModel, back_populates='user',
         cascade="all, delete-orphan")
+    create_at = Column(DateTime, default=datetime.utcnow())
+    updated_account = Column(DateTime, default=datetime.utcnow())
 
     def __repr__(self):
         return f'UserModel(user_id={self.user_id}, email={self.email})'
@@ -60,5 +63,5 @@ class UserModel(Base):
             "name": self.name,
             "surname": self.surname,
             "email": self.email,
-            "roles": self.roles
+            "roles": self.roles,
         }

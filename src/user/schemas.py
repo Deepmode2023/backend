@@ -2,7 +2,9 @@ from pydantic import BaseModel, EmailStr
 from pydantic.dataclasses import dataclass
 from fastapi import Form
 from typing import Union, Optional, Annotated
+from core.schema.schemas import TReturnedModel
 from uuid import UUID
+from datetime import datetime
 from enum import Enum
 
 
@@ -28,6 +30,11 @@ class ResponseUser(BaseModel):
     surname: str
     email: EmailStr
     roles: list[str]
+    updated_account: datetime
+
+
+class ResponseTRetunedModel(TReturnedModel):
+    data: ResponseUser
 
 
 class MessageResponse(BaseModel):
