@@ -4,8 +4,9 @@ from enum import Enum
 from typing import Union
 
 from src.user.models import UserModel
+from core.exeptions.schemas import DontExistItemInsideDB, AlreadyExistInDB
 from utils.hasher import hasher_instance
-from db.session import get_session
+from db.call import scalars_fetch_one_or_none
 
 
 class RaiseUpByUserCondition(str, Enum):
@@ -18,21 +19,19 @@ def raise_email_with_detail(detail: str, headers: dict = {"WWW-Authenticate": "B
                          detail=detail, headers=headers)
 
 
-async def check_user_by_email_or_id_in_db(email: Union[str, None] = None, user_id: Union[str, None] = None,  raise_up_by_user_condition: RaiseUpByUserCondition = RaiseUpByUserCondition.EXIST) -> UserModel:
-    async with get_session() as db_session:
-        user = await db_session.scalars(select(UserModel).filter(
-            or_(UserModel.email == email, UserModel.user_id == user_id)
-        ))
-        user = user.one_or_none()
+async def check_user_by_email_or_id_in_db(email: Union[str, None] = None,
+                                          user_id: Union[str, None] = None,
+                                          raise_up_by_user_condition: RaiseUpByUserCondition = RaiseUpByUserCondition.NOT_EXIST) -> UserModel:
+    user = await scalars_fetch_one_or_none(select(UserModel).filter(
+        or_(UserModel.email == email, UserModel.user_id == user_id)
+    ))
 
-        if raise_up_by_user_condition == RaiseUpByUserCondition.EXIST:
-            if not user:
-                raise raise_email_with_detail(
-                    "Email or user id is not registred with us.")
-        else:
-            if user:
-                raise raise_email_with_detail(
-                    "Email or user id already exist with us.")
+    if raise_up_by_user_condition == RaiseUpByUserCondition.EXIST:
+        if user:
+            raise AlreadyExistInDB
+    else:
+        if not user:
+            raise DontExistItemInsideDB
     return user
 
 

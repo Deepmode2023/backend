@@ -30,7 +30,7 @@ class ResponseUser(BaseModel):
     surname: str
     email: EmailStr
     roles: list[str]
-    updated_account: datetime
+    updated_account: Optional[datetime] = None
 
 
 class ResponseTRetunedModel(TReturnedModel):

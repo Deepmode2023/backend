@@ -8,10 +8,12 @@ from jose import jwt, JWTError
 from strawberry.types import Info
 from strawberry.permission import BasePermission
 
+
 from src.user.models import UserModel, PortalRole
 from .user_issues import check_user_by_email_or_id_in_db
 from utils.basic import contains_with_list
 from core.exeptions.schemas import NoValidTokenRaw
+from core.schema.schemas import TReturnedModel
 
 
 from settings import settings
@@ -73,11 +75,14 @@ def get_token_hash(token_raw: str) -> str:
 
 
 async def get_current_user(token: str = Depends(oauth2_schema)) -> UserModel:
-    payload = decode_jwt_token(token=token)
+    try:
+        payload = decode_jwt_token(token=token)
 
-    user_id = payload.get("user").get("user_id")
+        user_id = payload.get("user").get("user_id")
 
-    return await check_user_by_email_or_id_in_db(user_id=user_id)
+        return await check_user_by_email_or_id_in_db(user_id=user_id)
+    except Exception:
+        return HTTPException
 
 
 def create_access_token(user: UserModel, expires_delta: Optional[timedelta] = None):
