@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+
 from typing import Union, Dict, Any
 from core.exeptions.schemas import BasicExeptionsSchema
 

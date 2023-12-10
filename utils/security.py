@@ -1,16 +1,16 @@
 import utils.user_issues as user_issue_instance
-
 from datetime import datetime, timedelta
 from typing import Optional, Any
-from fastapi import status, HTTPException
 from jose import jwt, JWTError
 
 
 from strawberry.types import Info
 from strawberry.permission import BasePermission
 
+
 from src.user.models import UserModel, PortalRole
 from utils.basic import contains_with_list
+from core.exeptions.schemas import NoValidTokenRaw
 
 
 from settings import settings
@@ -60,8 +60,7 @@ def decode_jwt_token(token: str) -> dict:
             token=token, key=settings.SECRET_KEY, algorithms=settings.ALGORITHM)
 
     except JWTError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token errors.")
+        raise NoValidTokenRaw
 
     return decoded_dict
 
@@ -74,13 +73,17 @@ def create_refresh_token(user_id: str):
 
 
 def access_decorator(low_function):
+    async def wrapper(*args, **kwargs):
+        user_metadata: UserModel = kwargs.get("user")
+        is_admin = is_admin_checked(roles=user_metadata.roles)
+        return await low_function(is_admin=is_admin, *args, **kwargs)
+
+    return wrapper
+
+
+def is_admin_checked(roles: list[str]) -> bool:
     ACCESS_ROLES = [PortalRole.ROLE_PORTAL_ADMIN,
                     PortalRole.ROLE_PORTAL_SUPERADMIN]
 
-    async def wrapper(*args, **kwargs):
-        user_metadata: UserModel = kwargs.get("user")
-
-        is_admin = contains_with_list(list_contains=user_metadata.roles,
-                                      compare_list=ACCESS_ROLES)
-        return await low_function(is_admin=is_admin, *args, **kwargs)
-    return wrapper
+    return contains_with_list(list_contains=roles,
+                              compare_list=ACCESS_ROLES)

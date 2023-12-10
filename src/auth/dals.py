@@ -16,7 +16,7 @@ class AuthDAL:
     async def get_refresh_token(self, refresh_token: str) -> TokenResponse:
         token_decode = decode_jwt_token(token=refresh_token)
         user = await check_user_by_email_or_id_in_db(
-            user_id=token_decode.get('user_id', None))
+            user_id=token_decode.get('user_id'))
 
         expire_second = timedelta(
             minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES).seconds

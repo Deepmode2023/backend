@@ -18,8 +18,10 @@ class SharedPreferenceModel(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     theme = Column(String, nullable=False, default=ThemeColor.WHITE_THEME)
     shared_mode = Column(Boolean, nullable=False, default=False)
-    user = relationship("UserModel", back_populates='shared_preference')
-    user_id = Column(UUID, ForeignKey("users.user_id"), unique=True)
+    user = relationship(
+        "UserModel", back_populates="shared_preference")
+    user_id = Column(UUID, ForeignKey(
+        "users.user_id", ondelete="CASCADE"), unique=True)
 
     def __repr__(self):
         return f'SharedPreferenceModel(id={self.id}, user_id={self.user_id})'

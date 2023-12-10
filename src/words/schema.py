@@ -8,6 +8,9 @@ from core.schema.schemas import TReturnedFailed
 from utils.params_helpers import ReturnedWithCommanParams
 
 
+from .models import WordModel
+
+
 @strawberry.enum
 class PartOfSpeach(str, Enum):
     NOUN = "NOUN"
@@ -18,6 +21,13 @@ class PartOfSpeach(str, Enum):
     PREPOSITION = "PREPOSITION"
     CONJUNCTION = "CONJUNCTION"
     INTERJECTION = "INTERJECTION"
+
+
+@strawberry.enum
+class SlangEnum(str, Enum):
+    ENG = "england"
+    USA = "united states"
+    PL = "poland"
 
 
 @strawberry.type
@@ -49,7 +59,7 @@ ReturnWordsExtendType = Annotated[Union[ReturnedWordsType,
 
 @strawberry.type
 class ReturnWordCreatedType(BasicExeptionsSchema):
-    data: list[str]
+    data: list[Word]
 
 
 ReturnCreatedWordExtendType = Annotated[
