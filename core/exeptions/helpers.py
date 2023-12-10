@@ -8,7 +8,8 @@ responses_status_errors = {404: {"model": TReturnedModel,
                                  "description": exeptions.DoNotUpdateFieldsInDB().get_message},
                            400: {"model": TReturnedModel,
                                  "description": exeptions.NoValidTokenRaw().get_message},
-                           401: {"model": TReturnedModel,
+
+                           403: {"model": TReturnedModel,
                                  "description": exeptions.YouDontHaveAccessExeptions().get_message},
                            409: {"model": TReturnedModel,
                                  "description": exeptions.AlreadyExistInDB().get_message},
@@ -34,7 +35,7 @@ def exeption_handling_decorator(f):
 
         except exeptions.YouDontHaveAccessExeptions as permission_denied:
             return TReturnedModel(details=permission_denied.get_message,
-                                  status=status.HTTP_401_UNAUTHORIZED, data=[])
+                                  status=status.HTTP_403_FORBIDDEN, data=[])
 
         except exeptions.DontExistItemInsideDB:
             return TReturnedModel(details=exeptions.DontExistItemInsideDB().get_message,
@@ -44,7 +45,11 @@ def exeption_handling_decorator(f):
             return TReturnedModel(details=exeptions.AlreadyExistInDB().get_message,
                                   status=status.HTTP_409_CONFLICT, data=[])
 
-        except exeptions.UnknownExceptions as exe:
+        except exeptions.FailedCreate as failedException:
+            return TReturnedModel(details=failedException.get_message,
+                                  status=status.HTTP_409_CONFLICT, data=[])
+
+        except exeptions.UnknownExceptions:
             "HERE WE NEED PROVIDE LOGIC FOR ADDED TO DB"
             return TReturnedModel(details=exeptions.UnknownExceptions().get_message,
                                   status=status.HTTP_451_UNAVAILABLE_FOR_LEGAL_REASONS, data=[])

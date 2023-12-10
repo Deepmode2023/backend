@@ -7,14 +7,9 @@ from fastapi.security import OAuth2PasswordBearer
 
 import utils.security as security_utils
 from src.user.models import UserModel
+from core.exeptions.schemas import DontExistItemInsideDB, AlreadyExistInDB
 from utils.hasher import hasher_instance
 from db.session import get_session
-from core.exeptions.schemas import NoValidTokenRaw
-from core.schema.schemas import TReturnedModel
-
-
-oauth2_schema = OAuth2PasswordBearer(
-    tokenUrl="/api/auth/token", auto_error=False)
 
 
 class RaiseUpByUserCondition(str, Enum):
@@ -43,15 +38,12 @@ async def current_user(token: str = Depends(oauth2_schema)) -> Union[UserModel, 
         return TReturnedModel(details=NoValidTokenRaw().get_message, status=status.HTTP_400_BAD_REQUEST, data=None)
 
 
-async def check_user_by_email_or_id_in_db(email: Union[str, None] = None, user_id: Union[str, None] = None,  raise_up_by_user_condition: RaiseUpByUserCondition = RaiseUpByUserCondition.EXIST) -> Union[UserModel, None]:
-    async with get_session() as db_session:
-        user = await db_session.scalars(select(UserModel).filter(
-            or_(UserModel.email == email, UserModel.user_id == user_id)
-        ))
-        user = user.one_or_none()
-
-        if user is None:
-            raise NoValidTokenRaw
+async def check_user_by_email_or_id_in_db(email: Union[str, None] = None,
+                                          user_id: Union[str, None] = None,
+                                          raise_up_by_user_condition: RaiseUpByUserCondition = RaiseUpByUserCondition.NOT_EXIST) -> UserModel:
+    user = await scalars_fetch_one_or_none(select(UserModel).filter(
+        or_(UserModel.email == email, UserModel.user_id == user_id)
+    ))
 
         if raise_up_by_user_condition == RaiseUpByUserCondition.EXIST:
             if not user:

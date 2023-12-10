@@ -110,6 +110,7 @@ def resize_option(scale_params: int, width: int, height: int) -> tuple[int, int]
     return (round(width / scale_params), round(height / scale_params))
 
 
+### EXEPTIONS###
 class ThisFileIsNotPicture (Exception):
     def __str__(self) -> str:
         return "This file is not a png, jpg, jpeg, wepb image!"
