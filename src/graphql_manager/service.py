@@ -1,9 +1,7 @@
 import strawberry
 from strawberry.fastapi import GraphQLRouter
-
-
 from src.words.service import Query as Query_words, Mutation as Mutation_words
-from utils.context import get_context
+from utils.context.auth import get_context
 
 
 @strawberry.type
@@ -19,4 +17,4 @@ class Query(Query_words):
 schema = strawberry.Schema(
     query=Query, mutation=Mutation)
 
-graphql_app = GraphQLRouter(schema, context_getter=get_context,)
+graphql_app = GraphQLRouter(schema, context_getter=get_context)

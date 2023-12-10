@@ -31,7 +31,7 @@ def exeption_handling_decorator(f):
             return TReturnedModel(details=exeptions.AlreadyExistInDB().get_message,
                                   status=status.HTTP_409_CONFLICT, data=[])
 
-        except exeptions.UnknownExceptions:
+        except exeptions.UnknownExceptions as exe:
             "HERE WE NEED PROVIDE LOGIC FOR ADDED TO DB"
             return TReturnedModel(details=exeptions.UnknownExceptions().get_message,
                                   status=status.HTTP_451_UNAVAILABLE_FOR_LEGAL_REASONS, data=[])
