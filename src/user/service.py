@@ -5,7 +5,7 @@ from .schemas import CreateUserRequest, ResponseUser
 from .dals import UserDAL
 from db.session import get_session
 
-from utils.security import oauth2_schema
+from utils.user_issues import oauth2_schema
 
 guest_router = APIRouter()
 user_router = APIRouter(dependencies=[Depends(oauth2_schema)])

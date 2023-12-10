@@ -1,20 +1,14 @@
-from fastapi import FastAPI, status
-from starlette.middleware.authentication import AuthenticationMiddleware
-from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI
 
-from src.shared_preference.service import preference_router
-from src.auth.service import auth_router
-from src.user.service import user_router, guest_router
 from src.graphql_manager.service import graphql_app
-
-from utils.security import JWTAuth
+from src.user.service import user_router, guest_router
+from src.auth.service import auth_router
+from src.shared_preference.service import preference_router
 
 
 main_app = FastAPI(title="Deepmode")
 
 
-main_app.add_middleware(AuthenticationMiddleware, backend=JWTAuth(),)
 main_app.include_router(auth_router, prefix="/api/auth", tags=["Auth"])
 main_app.include_router(guest_router, prefix="/api/user", tags=["User"])
 main_app.include_router(user_router, prefix="/api/user", tags=["User"])

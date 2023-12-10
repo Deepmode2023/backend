@@ -49,7 +49,7 @@ ReturnWordsExtendType = Annotated[Union[ReturnedWordsType,
 
 @strawberry.type
 class ReturnWordCreatedType(BasicExeptionsSchema):
-    data: list[Word]
+    data: list[str]
 
 
 ReturnCreatedWordExtendType = Annotated[

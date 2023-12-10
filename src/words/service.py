@@ -1,12 +1,12 @@
 import strawberry
+from typing import Optional
 from strawberry.types import Info
-from typing import Optional, Union
 
 from utils.params_helpers import CommonParams
 from utils.math import calculate_pagination_page
-from utils.security import JWTAuth
 from db.session import get_session
 from fastapi import status as StatusFastApi
+from utils.security import JWTAuth
 
 from . import constants as constantPoint
 from . import schema as SchemaInstanceType
@@ -23,9 +23,11 @@ class Mutation:
                           translate: str, slug: Optional[str] = "", example: Optional[str] = "",
                           synonym: Optional[str] = [], image_url: Optional[str] = None) -> SchemaInstanceType.ReturnCreatedWordExtendType:
         try:
+            current_user = info.context.current_user
             async with get_session() as db_session:
                 dals = WordDAL(db_session=db_session)
-                created_word_instance = await dals.create_word(token_raw=info.context.get_raw_token, translate=translate, slug=slug,
+
+                created_word_instance = await dals.create_word(user=current_user, translate=translate, slug=slug,
                                                                name=name, example=example, synonym=synonym,
                                                                image_url=image_url,
                                                                part_of_speach=part_of_speach)
@@ -35,16 +37,17 @@ class Mutation:
             raise
 
     @strawberry.mutation(name=constantPoint.UPDATE_WORD["name"],
-                         description=constantPoint.UPDATE_WORD["descriptions"], permission_classes=[JWTAuth])
+                         description=constantPoint.UPDATE_WORD["descriptions"])
     @exeption_handling_decorator_graph_ql
     async def update_word(self, info: Info, id: int,
                           name: Optional[str] = None, part_of_speach: Optional[SchemaInstanceType.PartOfSpeach] = None,
                           translate: Optional[str] = None, slug: Optional[str] = None, example: Optional[str] = None,
                           synonym: Optional[str] = None, image_url: Optional[str] = None) -> SchemaInstanceType.ReturnUpdatedWordExtendType:
         try:
+            current_user = info.context.current_user
             async with get_session() as db_session:
                 dals = WordDAL(db_session=db_session)
-                updated_word_instance = await dals.update_word(id=id, token_raw=info.context.get_raw_token, translate=translate, slug=slug,
+                updated_word_instance = await dals.update_word(id=id, user=current_user, translate=translate, slug=slug,
                                                                name=name, example=example, synonym=synonym,
                                                                image_url=image_url,
                                                                part_of_speach=part_of_speach)
@@ -55,14 +58,13 @@ class Mutation:
             raise
 
     @strawberry.mutation(name=constantPoint.DELETE_WORD["name"],
-                         description=constantPoint.DELETE_WORD["descriptions"], permission_classes=[JWTAuth])
+                         description=constantPoint.DELETE_WORD["descriptions"])
     @exeption_handling_decorator_graph_ql
     async def delete_word(self, info: Info, id: int) -> SchemaInstanceType.ReturnDeleteWordExtendType:
         try:
             async with get_session() as db_session:
                 dals = WordDAL(db_session=db_session)
-                delete_word = await dals.delete_word(
-                    id=id, token_raw=info.context.get_raw_token)
+                delete_word = await dals.delete_word(id=id, token="token", user="user")
             return SchemaInstanceType.ReturnWordDeleteType(details="You've been successful in delete the word.",
                                                            status=StatusFastApi.HTTP_200_OK, data=delete_word)
         except Exception:
@@ -72,9 +74,9 @@ class Mutation:
 @strawberry.type
 class Query:
     @strawberry.field(name=constantPoint.GET_WORDS["name"],
-                      description=constantPoint.GET_WORDS["descriptions"], permission_classes=[JWTAuth])
+                      description=constantPoint.GET_WORDS["descriptions"])
     @exeption_handling_decorator_graph_ql
-    async def get_words(self, common_params: CommonParams = {},
+    async def get_words(info: Info, common_params: CommonParams = {},
                         slug: Optional[str] = None, name: Optional[str] = None) -> SchemaInstanceType.ReturnWordsExtendType:
         try:
             async with get_session() as db_session:

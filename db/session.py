@@ -12,7 +12,6 @@ engine = create_async_engine(
     echo=True,
 )
 
-# create session for the interaction with database
 async_session = sessionmaker(
     engine, expire_on_commit=False, class_=AsyncSession)
 
@@ -21,8 +20,8 @@ async_session = sessionmaker(
 async def get_session() -> Generator:
     session_instance = None
     try:
-        async with async_session() as s:
-            session_instance = s
+        async with async_session() as session:
+            session_instance = session
             yield session_instance
     except:
         if session_instance:

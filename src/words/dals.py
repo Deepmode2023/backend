@@ -31,12 +31,15 @@ class WordDAL:
 
     @access_decorator
     async def create_word(self, name: str, translate: str, part_of_speach: PartOfSpeach, slug: str, example: str, synonym: list[str], image_url: Union[str, None], **kwargs) -> WordModel:
-        word = WordModel(user=kwargs.get("user"), slug=str.lower(slug), name=str.lower(name), translate=str.lower(translate), synonym=synonym,
+        word = WordModel(user_id=kwargs.get("user").user_id, slug=str.lower(slug), name=str.lower(name), translate=str.lower(translate), synonym=synonym,
                          example=str.lower(example), part_of_speach=part_of_speach, image_url=image_url)
+
+        print(">>>>", word.user)
         try:
             self.db_session.add(word)
             await self.db_session.commit()
-        except Exception:
+        except Exception as ex:
+            print(">>>>>>>> exeptions", ex, "<<<<<<<< ex")
             raise core_exeptions.AlreadyExistInDB
         return word
 
@@ -52,6 +55,9 @@ class WordDAL:
 
         updated_kwargs = return_words_kwarg_after_check_permission(access_field_not_admin=['slug', "synonym",  "example"], is_admin=is_admin, name=name,
                                                                    translate=translate, part_of_speach=part_of_speach, slug=slug, example=example, synonym=synonym, image_url=image_url)
+
+        if not updated_kwargs:
+            raise core_exeptions.DoNotUpdateFieldsInDB
 
         word = await self.db_session.scalars(update(WordModel).where(
             WordModel.id == updated_word.id).values(**updated_kwargs).returning(WordModel))
