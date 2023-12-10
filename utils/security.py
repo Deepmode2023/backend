@@ -1,5 +1,4 @@
 import utils.user_issues as user_issue_instance
-
 from datetime import datetime, timedelta
 from typing import Optional, Any
 from fastapi import status, HTTPException
@@ -9,8 +8,10 @@ from jose import jwt, JWTError
 from strawberry.types import Info
 from strawberry.permission import BasePermission
 
+
 from src.user.models import UserModel, PortalRole
 from utils.basic import contains_with_list
+from core.exeptions.schemas import NoValidTokenRaw
 
 
 from settings import settings
