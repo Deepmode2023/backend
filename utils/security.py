@@ -1,7 +1,6 @@
 import utils.user_issues as user_issue_instance
 from datetime import datetime, timedelta
 from typing import Optional, Any
-from fastapi import status, HTTPException
 from jose import jwt, JWTError
 
 
@@ -12,7 +11,6 @@ from strawberry.permission import BasePermission
 from src.user.models import UserModel, PortalRole
 from utils.basic import contains_with_list
 from core.exeptions.schemas import NoValidTokenRaw
-from core.schema.schemas import TReturnedModel
 
 
 from settings import settings
@@ -62,8 +60,7 @@ def decode_jwt_token(token: str) -> dict:
             token=token, key=settings.SECRET_KEY, algorithms=settings.ALGORITHM)
 
     except JWTError:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token errors.")
+        raise NoValidTokenRaw
 
     return decoded_dict
 

@@ -49,6 +49,10 @@ def exeption_handling_decorator(f):
             return TReturnedModel(details=failedException.get_message,
                                   status=status.HTTP_409_CONFLICT, data=[])
 
+        except exeptions.DoNotValidCredential as validCredential:
+            return TReturnedModel(details=validCredential.get_message,
+                                  status=status.HTTP_401_UNAUTHORIZED, data=[])
+
         except exeptions.UnknownExceptions:
             "HERE WE NEED PROVIDE LOGIC FOR ADDED TO DB"
             return TReturnedModel(details=exeptions.UnknownExceptions().get_message,
@@ -83,6 +87,10 @@ def exeption_handling_decorator_graph_ql(f):
         except exeptions.AlreadyExistInDB:
             return TReturnedFailed(details=exeptions.AlreadyExistInDB().get_message,
                                    status=status.HTTP_409_CONFLICT)
+
+        except exeptions.DoNotValidCredential as validCredential:
+            return TReturnedFailed(details=validCredential.get_message,
+                                   status=status.HTTP_401_UNAUTHORIZED, data=[])
 
         except exeptions.UnknownExceptions as exeption:
             "HERE WE NEED PROVIDE LOGIC FOR ADDED TO DB"

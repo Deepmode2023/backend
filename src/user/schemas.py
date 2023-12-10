@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr
 from pydantic.dataclasses import dataclass
 from fastapi import Form
-from typing import Union, Optional, Annotated
+from typing import Union, Optional, Annotated, Dict
 from core.schema.schemas import TReturnedModel
 from uuid import UUID
 from datetime import datetime

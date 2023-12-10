@@ -93,7 +93,7 @@ class ImageCreaterModel(ImageModelBasic):
             return ReturnedImageCreaterModel(is_create=True,
                                              pathname=PathnameUrl(small=str(small_path), big=str(big_path)))
         else:
-            raise FailedCreate(issue="picture")
+            raise FailedCreate(reason="picture")
 
     @property
     def get_pathname_cls(self) -> dict:

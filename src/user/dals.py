@@ -64,5 +64,5 @@ class UserDAL:
                 delete(UserModel).where(UserModel.email == email))
             await self.db_session.commit()
             return user_model
-        except Exception as exept:
+        except Exception:
             raise

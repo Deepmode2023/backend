@@ -25,13 +25,13 @@ class Mutation:
                           synonym: Optional[str] = [], image_url: Optional[str] = None) -> SchemaInstanceType.ReturnCreatedWordExtendType:
         try:
             current_user = info.context.current_user
+            print(">>>>> ", current_user)
             async with get_session() as db_session:
                 dals = WordDAL(db_session=db_session)
                 created_word_instance = await dals.create_word(user=current_user, translate=translate, slug=slug,
-
                                                                name=name, example=example, synonym=synonym,
                                                                image_url=image_url,
-                                                               part_of_speach=part_of_speach)
+                                                               part_of_speach=part_of_speach, slang=slang)
                 return SchemaInstanceType.ReturnWordCreatedType(details="The word was successfully created.",
                                                                 status=StatusFastApi.HTTP_201_CREATED, data=[created_word_instance])
         except Exception:
@@ -65,9 +65,11 @@ class Mutation:
     @exeption_handling_decorator_graph_ql
     async def delete_word(self, info: Info, id: int) -> SchemaInstanceType.ReturnDeleteWordExtendType:
         try:
+
+            current_user = info.context.current_user
             async with get_session() as db_session:
                 dals = WordDAL(db_session=db_session)
-                delete_word = await dals.delete_word(id=id, token="token", user="user")
+                delete_word = await dals.delete_word(id=id, user=current_user)
             return SchemaInstanceType.ReturnWordDeleteType(details="You've been successful in delete the word.",
                                                            status=StatusFastApi.HTTP_200_OK, data=delete_word)
         except Exception:

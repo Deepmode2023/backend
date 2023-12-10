@@ -1,4 +1,5 @@
 import strawberry
+from typing import Optional
 
 
 @strawberry.type
@@ -7,70 +8,95 @@ class BasicExeptionsSchema:
     status: int
 
 
-class NoValidTokenRaw(Exception):
+class DoNotValidCredential(Exception):
+    message = "You have entered an incorrect"
+
+    def __init__(self, reason: Optional[str] = "password"):
+        self.message = f"{self.message} {reason}!"
+
     def __str__(self) -> str:
-        return "Your token is not valid. You are denied access!"
+        return self.message
 
     @property
     def get_message(self) -> str:
-        return "Your token is not valid. You are denied access!"
+        return self.message
+
+
+class NoValidTokenRaw(Exception):
+    message = "Your token is not valid. You are denied access!"
+
+    def __str__(self) -> str:
+        return self.message
+
+    @property
+    def get_message(self) -> str:
+        return self.message
 
 
 class AlreadyExistInDB(Exception):
+    message = "Already exists in the database!"
+
     def __str__(self) -> str:
-        return "Already exists in the database!"
+        return self.message
 
     @property
     def get_message(self) -> str:
-        return "Already exists in the database!"
+        return self.message
 
 
 class DoNotUpdateFieldsInDB(Exception):
+    message = "We haven't been able to update fields in database!"
+
     def __str__(self) -> str:
-        return "We haven't been able to update fields in database!"
+        return self.message
 
     @property
     def get_message(self) -> str:
-        return "We haven't been able to update fields in database!"
+        return self.message
 
 
 class FailedCreate(Exception):
-    def __init__(self, issue: str = " "):
-        self.issue = f"a {issue}"
+    def __init__(self, reason: str = " "):
+        self.message = f"""You failed to create a {
+            reason}. Try again in a little while."""
 
     def __str__(self, ) -> str:
-        return f"You failed to create {self.issue}! Try again in a little while."
+        return self.message
 
     @property
     def get_message(self) -> str:
-        return f"You failed to create {self.issue}! Try again in a little while."
+        return self.message
 
 
 class YouDontHaveAccessExeptions(Exception):
     def __init__(self, reason: str = "!"):
-        self.reason = reason
+        self.message = f"You don't have permission {reason}"
 
     def __str__(self) -> str:
-        return f"You don't have permission {self.reason}"
+        return self.message
 
     @property
     def get_message(self,) -> str:
-        return f"You don't have permission {self.reason}"
+        return self.message
 
 
 class DontExistItemInsideDB(Exception):
+    message = "This object does not exist in the database!"
+
     def __str__(self) -> str:
-        return "This object does not exist in the database!"
+        return self.message
 
     @property
     def get_message(self) -> str:
-        return "This object does not exist in the database!"
+        return self.message
 
 
 class UnknownExceptions(Exception):
+    message = "You have encountered an unknown error. We will contact you as soon as we have resolved this issue!"
+
     def __str__(self) -> str:
-        return "You have encountered an unknown error. We will contact you as soon as we have resolved this issue!"
+        return self.message
 
     @property
     def get_message(self) -> str:
-        return "You have encountered an unknown error. We will contact you as soon as we have resolved this issue!"
+        return self.message
