@@ -20,6 +20,13 @@ class PartOfSpeach(str, Enum):
     INTERJECTION = "INTERJECTION"
 
 
+@strawberry.enum
+class SlangEnum(str, Enum):
+    ENG = "england"
+    USA = "united states"
+    PL = "poland"
+
+
 @strawberry.type
 class Word:
     id: int

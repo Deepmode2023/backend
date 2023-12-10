@@ -4,6 +4,19 @@ from core.schema.schemas import TReturnedModel, TReturnedFailed
 from functools import wraps
 
 
+responses_status_errors = {404: {"model": TReturnedModel,
+                                 "description": exeptions.DoNotUpdateFieldsInDB().get_message},
+                           400: {"model": TReturnedModel,
+                                 "description": exeptions.NoValidTokenRaw().get_message},
+                           401: {"model": TReturnedModel,
+                                 "description": exeptions.YouDontHaveAccessExeptions().get_message},
+                           409: {"model": TReturnedModel,
+                                 "description": exeptions.AlreadyExistInDB().get_message},
+                           451: {"model": TReturnedModel,
+                                 "description": exeptions.UnknownExceptions().get_message},
+                           }
+
+
 def exeption_handling_decorator(f):
     @wraps(f)
     async def wrapper(*args, **kwargs):
@@ -19,8 +32,8 @@ def exeption_handling_decorator(f):
             return TReturnedModel(details=exeptions.NoValidTokenRaw().get_message,
                                   status=status.HTTP_400_BAD_REQUEST, data=[])
 
-        except exeptions.YouDontHaveAccessExeptions:
-            return TReturnedModel(details=exeptions.YouDontHaveAccessExeptions().get_message,
+        except exeptions.YouDontHaveAccessExeptions as permission_denied:
+            return TReturnedModel(details=permission_denied.get_message,
                                   status=status.HTTP_401_UNAUTHORIZED, data=[])
 
         except exeptions.DontExistItemInsideDB:

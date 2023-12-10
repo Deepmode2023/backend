@@ -8,6 +8,7 @@ from db.session import get_session
 from fastapi import status as StatusFastApi
 from utils.security import JWTAuth
 
+
 from . import constants as constantPoint
 from . import schema as SchemaInstanceType
 from .dals import WordDAL
@@ -20,14 +21,14 @@ class Mutation:
                          description=constantPoint.CREATE_WORD["descriptions"], permission_classes=[JWTAuth])
     @exeption_handling_decorator_graph_ql
     async def create_word(self, info: Info, name: str, part_of_speach: SchemaInstanceType.PartOfSpeach,
-                          translate: str, slug: Optional[str] = "", example: Optional[str] = "",
+                          translate: str, slug: Optional[str] = "", slang: Optional[SchemaInstanceType.SlangEnum] = SchemaInstanceType.SlangEnum.ENG, example: Optional[str] = "",
                           synonym: Optional[str] = [], image_url: Optional[str] = None) -> SchemaInstanceType.ReturnCreatedWordExtendType:
         try:
             current_user = info.context.current_user
             async with get_session() as db_session:
                 dals = WordDAL(db_session=db_session)
-
                 created_word_instance = await dals.create_word(user=current_user, translate=translate, slug=slug,
+
                                                                name=name, example=example, synonym=synonym,
                                                                image_url=image_url,
                                                                part_of_speach=part_of_speach)
@@ -40,6 +41,7 @@ class Mutation:
                          description=constantPoint.UPDATE_WORD["descriptions"])
     @exeption_handling_decorator_graph_ql
     async def update_word(self, info: Info, id: int,
+                          slang: Optional[SchemaInstanceType.SlangEnum] = SchemaInstanceType.SlangEnum.ENG,
                           name: Optional[str] = None, part_of_speach: Optional[SchemaInstanceType.PartOfSpeach] = None,
                           translate: Optional[str] = None, slug: Optional[str] = None, example: Optional[str] = None,
                           synonym: Optional[str] = None, image_url: Optional[str] = None) -> SchemaInstanceType.ReturnUpdatedWordExtendType:
@@ -49,6 +51,7 @@ class Mutation:
                 dals = WordDAL(db_session=db_session)
                 updated_word_instance = await dals.update_word(id=id, user=current_user, translate=translate, slug=slug,
                                                                name=name, example=example, synonym=synonym,
+                                                               slang=slang,
                                                                image_url=image_url,
                                                                part_of_speach=part_of_speach)
 
