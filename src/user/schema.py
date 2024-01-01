@@ -25,7 +25,7 @@ class CreateUserRequest(BaseModel):
 
 
 class ResponseUser(BaseModel):
-    user_id: UUID
+    user_id: str
     name: str
     surname: str
     email: EmailStr

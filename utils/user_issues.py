@@ -1,4 +1,4 @@
-from fastapi import status, HTTPException, Depends
+from fastapi import status, Depends
 from sqlalchemy import select, or_
 from enum import Enum
 from typing import Union
@@ -9,9 +9,9 @@ import utils.security as security_utils
 from src.user.models import UserModel
 from utils.hasher import hasher_instance
 from core.exeptions.schema import NoValidTokenRaw, AlreadyExistInDB, DontExistItemInsideDB, DoNotValidCredential
-from core.schema.schemas import TReturnedModel
 
 from db.call import scalars_fetch_one_or_none
+from core.type import ExceptionResponseAPI
 
 
 oauth2_schema = OAuth2PasswordBearer(
@@ -23,20 +23,23 @@ class RaiseUpByUserCondition(str, Enum):
     NOT_EXIST = "NOT_EXIST"
 
 
-async def current_user(token: str = Depends(oauth2_schema)) -> Union[UserModel, TReturnedModel]:
+async def current_user(token: str = Depends(oauth2_schema)) -> UserModel:
     try:
         dict_from_token = security_utils.decode_jwt_token(token=token)
+
         expire_time = dict_from_token.get("exp")
         now = round(datetime.now().timestamp())
         if now >= expire_time:
-            return TReturnedModel(details="The token time has expired!", status=status.HTTP_401_UNAUTHORIZED, data=None)
+            return ExceptionResponseAPI(msg="The token time has expired!", header={"Authorization": "Bearer"},
+                                        status_code=status.HTTP_401_UNAUTHORIZED, input={}, reason="The token time has expired!")
 
         user = await check_user_by_email_or_id_in_db(user_id=dict_from_token.get('user').get('user_id'))
 
         return user
 
     except Exception:
-        return TReturnedModel(details=NoValidTokenRaw().get_message, status=status.HTTP_400_BAD_REQUEST, data=None)
+        return ExceptionResponseAPI(msg=NoValidTokenRaw().get_message, header={"Authorization": "Bearer"},
+                                    status_code=status.HTTP_400_BAD_REQUEST, input={}, reason=NoValidTokenRaw().get_message)
 
 
 async def check_user_by_email_or_id_in_db(email: Union[str, None] = None, user_id: Union[str, None] = None,  raise_up_by_user_condition: RaiseUpByUserCondition = RaiseUpByUserCondition.NOT_EXIST) -> UserModel:

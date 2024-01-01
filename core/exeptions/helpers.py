@@ -4,6 +4,9 @@ from core.schema.schemas import TReturnedModel, TReturnedFailed
 from functools import wraps
 
 
+from core.type import ExceptionResponseAPI
+
+
 responses_status_errors = {404: {"model": TReturnedModel,
                                  "description": exeptions.DoNotUpdateFieldsInDB().get_message},
                            400: {"model": TReturnedModel,
@@ -26,38 +29,55 @@ def exeption_handling_decorator(f):
 
         # BASIC EXEPTIONS
         except exeptions.DoNotUpdateFieldsInDB:
-            return TReturnedModel(details=exeptions.DoNotUpdateFieldsInDB().get_message,
-                                  status=status.HTTP_404_NOT_FOUND, data=[])
+            return ExceptionResponseAPI(msg=exeptions.DoNotUpdateFieldsInDB().get_message,
+                                        input={},
+                                        reason=exeptions.DoNotUpdateFieldsInDB().get_message,
+                                        status_code=status.HTTP_404_NOT_FOUND)
 
         except exeptions.NoValidTokenRaw:
-            return TReturnedModel(details=exeptions.NoValidTokenRaw().get_message,
-                                  status=status.HTTP_400_BAD_REQUEST, data=[])
+            return ExceptionResponseAPI(msg=exeptions.NoValidTokenRaw().get_message,
+                                        input={},
+                                        reason=exeptions.NoValidTokenRaw().get_message,
+                                        status_code=status.HTTP_400_BAD_REQUEST,
+                                        header={"Authorization": "Bearer"})
 
         except exeptions.YouDontHaveAccessExeptions as permission_denied:
-            return TReturnedModel(details=permission_denied.get_message,
-                                  status=status.HTTP_403_FORBIDDEN, data=[])
+            return ExceptionResponseAPI(msg=permission_denied.get_message,
+                                        input={},
+                                        reason=permission_denied.get_message,
+                                        status_code=status.HTTP_403_FORBIDDEN)
 
         except exeptions.DontExistItemInsideDB:
-            return TReturnedModel(details=exeptions.DontExistItemInsideDB().get_message,
-                                  status=status.HTTP_404_NOT_FOUND, data=[])
+            return ExceptionResponseAPI(msg=exeptions.DontExistItemInsideDB().get_message,
+                                        input={},
+                                        reason=exeptions.DontExistItemInsideDB().get_message,
+                                        status_code=status.HTTP_404_NOT_FOUND)
 
         except exeptions.AlreadyExistInDB:
-            return TReturnedModel(details=exeptions.AlreadyExistInDB().get_message,
-                                  status=status.HTTP_409_CONFLICT, data=[])
+            return ExceptionResponseAPI(msg=exeptions.AlreadyExistInDB().get_message,
+                                        input={},
+                                        reason=exeptions.AlreadyExistInDB().get_message,
+                                        status_code=status.HTTP_409_CONFLICT)
 
         except exeptions.FailedCreate as failedException:
-            return TReturnedModel(details=failedException.get_message,
-                                  status=status.HTTP_409_CONFLICT, data=[])
+            return ExceptionResponseAPI(msg=failedException.get_message,
+                                        input={},
+                                        reason=failedException.get_message,
+                                        status_code=status.HTTP_409_CONFLICT)
 
         except exeptions.DoNotValidCredential as validCredential:
-            return TReturnedModel(details=validCredential.get_message,
-                                  status=status.HTTP_401_UNAUTHORIZED, data=[])
+            return ExceptionResponseAPI(msg=validCredential.get_message,
+                                        input={},
+                                        reason=validCredential.get_message,
+                                        status_code=status.HTTP_401_UNAUTHORIZED,
+                                        header={"Authorization": "Bearer"})
 
         except exeptions.UnknownExceptions:
             "HERE WE NEED PROVIDE LOGIC FOR ADDED TO DB"
-            return TReturnedModel(details=exeptions.UnknownExceptions().get_message,
-                                  status=status.HTTP_451_UNAVAILABLE_FOR_LEGAL_REASONS, data=[])
-
+            return ExceptionResponseAPI(msg=exeptions.UnknownExceptions().get_message,
+                                        input={},
+                                        reason=exeptions.UnknownExceptions().get_message,
+                                        status_code=status.HTTP_451_UNAVAILABLE_FOR_LEGAL_REASONS)
     return wrapper
 
 

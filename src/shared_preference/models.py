@@ -23,13 +23,13 @@ class SharedPreferenceModel(Base):
     user_id = Column(UUID, ForeignKey(
         "users.user_id", ondelete="CASCADE"), unique=True)
 
-    def __repr__(self):
-        return f'SharedPreferenceModel(id={self.id}, user_id={self.user_id})'
+    def __repr__(cls):
+        return f'SharedPreferenceModel(id={cls.id}, user_id={cls.user_id})'
 
     @property
-    def to_json(self):
+    def toJson(cls):
         return {
-            "theme": self.theme,
-            "shared_mode": self.shared_mode,
-            "user_id": self.user_id
+            "theme": cls.theme,
+            "shared_mode": cls.shared_mode,
+            "user_id": cls.user_id
         }

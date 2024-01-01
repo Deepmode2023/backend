@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from fastapi.responses import JSONResponse
 from fastapi import APIRouter, Depends, Form, status
 from typing import Annotated, Union
 from pydantic import EmailStr
@@ -21,35 +20,41 @@ from utils.user_issues import current_user
 from utils.basic import build_kwargs_not_none
 from utils.image import ImageCreaterModel, ThisFileIsNotPicture
 from utils.time import is_utc_greater_now_utc
-from db.session import get_session
-
+from utils.dict import extract_key_or_value
 from utils.user_issues import oauth2_schema
+
+
+from db.session import get_session
+from core.type import ExceptionResponseAPI, ResponseType, ResponseAPI
+
 
 guest_router = APIRouter()
 user_router = APIRouter(dependencies=[Depends(oauth2_schema)])
 
 
-@guest_router.post("/", response_model=Union[ResponseTRetunedModel, TReturnedModel])
+@guest_router.post("/", response_model=ResponseType)
 @exeption_handling_decorator
-async def create_user(name: Annotated[str, Form()], surname: Annotated[str, Form()], email: Annotated[str, Form()], password: Annotated[str, Form()], avatar: UploadFile = File(None)):
+async def create_user(name: Annotated[str, Form()], surname: Annotated[str, Form()], email: Annotated[EmailStr, Form()], password: Annotated[str, Form()], avatar: UploadFile = File(None)):
     try:
-        print(">>>>> sldflsdfl")
         async with get_session() as db_session:
             dals = UserDAL(db_session=db_session)
             user_account = await dals.create_user_account(image_instance=ImageCreaterModel(image=avatar),
                                                           name=name, surname=surname, email=email, password=password)
-        return ResponseTRetunedModel(details="You have successfully created an account.",
-                                     status=status.HTTP_201_CREATED, data=ResponseUser(**user_account.toJson, updated_account=user_account.updated_account))
+            response_data = ResponseUser(user_id=str(user_account.user_id),
+                                         **extract_key_or_value(user_account.toJson, ["user_id"]))
+
+        return ResponseAPI(msg="You have successfully created an account.", status_code=status.HTTP_201_CREATED,
+                           input=response_data.model_dump())
     except ThisFileIsNotPicture:
-        return TReturnedModel(details=ThisFileIsNotPicture().get_message, status=status.HTTP_400_BAD_REQUEST, data=None)
-    except Exception as ex:
-        print(">>> exeptions", ex)
+        return ExceptionResponseAPI(msg=ThisFileIsNotPicture().get_message, status_code=status.HTTP_400_BAD_REQUEST, input={})
+
+    except Exception:
         raise
 
 
-@user_router.post("/me", response_model=Union[ResponseUser, TReturnedModel])
-async def get_user_details(current_user: Union[UserModel, TReturnedModel] = Depends(current_user)):
-    return current_user
+@user_router.post("/me", response_model=ResponseType)
+async def get_user_details(current_user: UserModel = Depends(current_user)):
+    return ResponseAPI(msg="Your account details.", input=current_user.toJson, reason="")
 
 
 @user_router.put("/update_user", response_model=Union[ResponseTRetunedModel, TReturnedModel], responses={**responses_status_errors, 403: {"model": TReturnedModel, "description": DontAllowChangeUser().get_message}})
@@ -69,17 +74,19 @@ async def update_user(email: Annotated[EmailStr, Form()], current_user: Union[Us
                                                                          last_update.tm_hour).timestamp(), day_spaced=1):
                     if is_access or current_user.email == email:
                         user_account = await dals.update_user_account(email=email, image_instance=ImageCreaterModel(image=avatar), **params)
-                        return ResponseTRetunedModel(details=f"Successfull update user {user_account.email}",
-                                                     status=status.HTTP_200_OK, data=ResponseUser(**user_account.toJson, updated_account=user_account.updated_account))
+                        return ResponseAPI(msg=f"Successfull update user {user_account.email}", status_code=status.HTTP_200_OK,
+                                           input=ResponseUser(**user_account.toJson, updated_account=user_account.updated_account).model_dump())
                     else:
                         raise YouDontHaveAccessExeptions(
                             reason="for change metadata user!")
                 else:
-                    return TReturnedModel(details=DontAllowChangeUser().get_message, status=status.HTTP_403_FORBIDDEN, data=None)
+                    return ExceptionResponseAPI(msg=DontAllowChangeUser().get_message, input={}, reason=DontAllowChangeUser().get_message,
+                                                status_code=status.HTTP_403_FORBIDDEN,)
         else:
             raise DontExistItemInsideDB
     except ThisFileIsNotPicture:
-        return TReturnedModel(details=ThisFileIsNotPicture().get_message, status=status.HTTP_400_BAD_REQUEST, data=None)
+        return ExceptionResponseAPI(msg=ThisFileIsNotPicture().get_message, status=status.HTTP_400_BAD_REQUEST,
+                                    input={}, reason=ThisFileIsNotPicture().get_message)
     except Exception:
         raise
 
@@ -95,9 +102,9 @@ async def delete_user(email: EmailStr, current_user: Union[UserModel, TReturnedM
                     dals = UserDAL(db_session=db_session)
                     delete_user = await dals.delete_user(email=email)
 
-                    return ResponseTRetunedModel(details=f"You successfully deleted the user's email address {delete_user.email}.",
-                                                 status=status.HTTP_200_OK, data=ResponseUser(**delete_user.toJson,
-                                                                                              updated_account=delete_user.updated_account))
+                    return ResponseAPI(msg=f"You successfully deleted the user's email address {delete_user.email}", status_code=status.HTTP_200_OK,
+                                       input=ResponseUser(**delete_user.toJson,
+                                                          updated_account=delete_user.updated_account).model_dump(), reason="")
             else:
                 raise YouDontHaveAccessExeptions(
                     reason="for delete metadata user!")
