@@ -6,15 +6,15 @@ from typing import Annotated, Union
 from pydantic import EmailStr
 from fastapi import File, UploadFile
 
-from core.exeptions.schemas import YouDontHaveAccessExeptions
+from core.exeptions.schema import YouDontHaveAccessExeptions
 
 from .models import UserModel
 from .exeptions import DontAllowChangeUser
-from .schemas import ResponseUser, ResponseTRetunedModel
+from .schema import ResponseUser, ResponseTRetunedModel
 from .dals import UserDAL
 from core.schema.schemas import TReturnedModel
 from core.exeptions.helpers import responses_status_errors, exeption_handling_decorator
-from core.exeptions.schemas import DontExistItemInsideDB
+from core.exeptions.schema import DontExistItemInsideDB
 
 from utils.security import is_admin_checked
 from utils.user_issues import current_user

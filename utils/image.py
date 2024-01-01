@@ -7,7 +7,7 @@ from enum import Enum
 from fastapi import UploadFile
 
 
-from core.exeptions.schemas import FailedCreate
+from core.exeptions.schema import FailedCreate
 
 
 class PathnameUrl(BaseModel):

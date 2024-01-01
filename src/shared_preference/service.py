@@ -7,10 +7,10 @@ from utils.user_issues import oauth2_schema, current_user
 from .dals import SharedPreferenceDAL
 from .models import ThemeColor
 from core.schema.schemas import TReturnedModel
-from .schemas import ReturnedSharedPreference
+from .schema import ReturnedSharedPreference
 
 from src.user.models import UserModel
-from core.exeptions.schemas import UnknownExceptions
+from core.exeptions.schema import UnknownExceptions
 from core.exeptions.helpers import exeption_handling_decorator
 
 preference_router = APIRouter()

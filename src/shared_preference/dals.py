@@ -3,7 +3,7 @@ from sqlalchemy import select, update
 from .models import SharedPreferenceModel
 
 from utils.basic import build_kwargs_not_none
-from core.exeptions.schemas import DoNotUpdateFieldsInDB
+from core.exeptions.schema import DoNotUpdateFieldsInDB
 from src.user.models import UserModel
 
 

@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import Union
 
-from .models import ThemeColor, SharedPreferenceModel
+from .models import ThemeColor
 from core.schema.schemas import TReturnedModel
 
 

@@ -8,7 +8,7 @@ from fastapi.security import OAuth2PasswordBearer
 import utils.security as security_utils
 from src.user.models import UserModel
 from utils.hasher import hasher_instance
-from core.exeptions.schemas import NoValidTokenRaw, AlreadyExistInDB, DontExistItemInsideDB, DoNotValidCredential
+from core.exeptions.schema import NoValidTokenRaw, AlreadyExistInDB, DontExistItemInsideDB, DoNotValidCredential
 from core.schema.schemas import TReturnedModel
 
 from db.call import scalars_fetch_one_or_none

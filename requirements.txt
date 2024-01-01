@@ -31,3 +31,5 @@ greenlet==3.0.0
 pydantic[email]
 Pillow==10.1.0
 python-multipart==0.0.6
+tzlocal==5.2
+pendulum

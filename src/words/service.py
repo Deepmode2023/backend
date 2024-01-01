@@ -15,28 +15,35 @@ from .dals import WordDAL
 from core.exeptions.helpers import exeption_handling_decorator_graph_ql
 
 
+from typing import Annotated, cast, Type
+from pydantic import GetJsonSchemaHandler, BaseModel
+from pydantic_core.core_schema import JsonSchema, with_info_plain_validator_function
+from pydantic_core import CoreSchema, core_schema
+from typing import Any, Callable
+
+
+class Zima:
+    @classmethod
+    def _validate(cls, __input_value: Any, _: Any) -> bool:
+        print(__input_value)
+        return cast(str, __input_value)
+
+    @classmethod
+    def __get_pydantic_json_schema__(
+        cls, core_schema: CoreSchema, handler: GetJsonSchemaHandler
+    ) -> JsonSchema:
+
+        return {"type": "string", "format": "color"}
+
+    @classmethod
+    def __get_pydantic_core_schema__(
+        cls, source: Type[Any], handler: Callable[[Any], CoreSchema]
+    ) -> CoreSchema:
+        return with_info_plain_validator_function(cls._validate)
+
+
 @strawberry.type
 class Mutation:
-    @strawberry.mutation(name=constantPoint.CREATE_WORD["name"],
-                         description=constantPoint.CREATE_WORD["descriptions"], permission_classes=[JWTAuth])
-    @exeption_handling_decorator_graph_ql
-    async def create_word(self, info: Info, name: str, part_of_speach: SchemaInstanceType.PartOfSpeach,
-                          translate: str, slug: Optional[str] = "", slang: Optional[SchemaInstanceType.SlangEnum] = SchemaInstanceType.SlangEnum.ENG, example: Optional[str] = "",
-                          synonym: Optional[str] = [], image_url: Optional[str] = None) -> SchemaInstanceType.ReturnCreatedWordExtendType:
-        try:
-            current_user = info.context.current_user
-            print(">>>>> ", current_user)
-            async with get_session() as db_session:
-                dals = WordDAL(db_session=db_session)
-                created_word_instance = await dals.create_word(user=current_user, translate=translate, slug=slug,
-                                                               name=name, example=example, synonym=synonym,
-                                                               image_url=image_url,
-                                                               part_of_speach=part_of_speach, slang=slang)
-                return SchemaInstanceType.ReturnWordCreatedType(details="The word was successfully created.",
-                                                                status=StatusFastApi.HTTP_201_CREATED, data=[created_word_instance])
-        except Exception:
-            raise
-
     @strawberry.mutation(name=constantPoint.UPDATE_WORD["name"],
                          description=constantPoint.UPDATE_WORD["descriptions"])
     @exeption_handling_decorator_graph_ql
@@ -65,7 +72,6 @@ class Mutation:
     @exeption_handling_decorator_graph_ql
     async def delete_word(self, info: Info, id: int) -> SchemaInstanceType.ReturnDeleteWordExtendType:
         try:
-
             current_user = info.context.current_user
             async with get_session() as db_session:
                 dals = WordDAL(db_session=db_session)
