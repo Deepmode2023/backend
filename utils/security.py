@@ -10,7 +10,7 @@ from strawberry.permission import BasePermission
 
 from src.user.models import UserModel, PortalRole
 from utils.basic import contains_with_list
-from core.exeptions.schemas import NoValidTokenRaw
+from core.exeptions.schema import NoValidTokenRaw
 
 
 from settings import settings

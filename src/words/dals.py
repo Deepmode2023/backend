@@ -6,7 +6,7 @@ from utils.security import access_decorator
 from utils.params_helpers import CommonParams
 from .models import WordModel
 from .schema import PartOfSpeach
-from core.exeptions import schemas as core_exeptions
+from core.exeptions import schema as core_exeptions
 
 from .helpers import return_words_kwarg_after_check_permission
 

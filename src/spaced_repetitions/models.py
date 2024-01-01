@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 
 from enum import Enum
 
-
+from utils.uuid import compare_uuid
 from db.models import Base
 
 
@@ -25,23 +25,30 @@ class SpacedRepetitionsModel(Base):
         "users.user_id", ondelete="CASCADE", name="fk_user_id"))
     user = relationship(
         "UserModel", back_populates='spaced_repetitions')
-    count_repetition = Column(Integer, default=0)
-    date_repitition = Column(DateTime(timezone=True), nullable=False)
+    count_repetition = Column(Integer, default=1)
+    date_repetition = Column(DateTime(timezone=True), nullable=False)
     date_last_repetition = Column(
         DateTime(timezone=True), nullable=False)
 
-    def __repr__(self,):
-        return f"SpacedRepetiotionsModel(id={self.id}, title={self.title})"
+    def __repr__(cls):
+        return f"SpacedRepetiotionsModel(id={cls.id}, title={cls.title})"
+
+    def __eq__(cls, other):
+        if isinstance(other, SpacedRepetitionsModel):
+            return cls.slug == other.slug \
+                and cls.title == other.title \
+                and compare_uuid(cls.user_id, other.user_id)
+        return False
 
     @property
-    def toJson(self,):
+    def toJson(cls,):
         return {
-            "id": self.id,
-            "title": self.title,
-            "slug": self.slug,
-            "description": self.description,
-            "user_id": self.user_id,
-            "count_repetition": self.count_repetition,
-            "date_repetition": self.date_repitition,
-            "date_last_repetition": self.date_last_repetition
+            "id": cls.id,
+            "title": cls.title,
+            "slug": cls.slug,
+            "description": cls.description,
+            "user_id": cls.user_id,
+            "count_repetition": cls.count_repetition,
+            "date_repetition": cls.date_repetition,
+            "date_last_repetition": cls.date_last_repetition
         }

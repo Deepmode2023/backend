@@ -1,16 +1,17 @@
 import strawberry
 from strawberry.fastapi import GraphQLRouter
-from src.words.service import Query as Query_words, Mutation as Mutation_words
+from src.words.service import Query as QueryWords, Mutation as MutationWords
+from src.spaced_repetitions.service import Query as QuerySpacedRepetiotions, Mutation as MutationSpacedRepetitions
 from utils.context.auth import get_context
 
 
 @strawberry.type
-class Mutation(Mutation_words):
+class Mutation(MutationWords, MutationSpacedRepetitions):
     pass
 
 
 @strawberry.type
-class Query(Query_words):
+class Query(QueryWords, QuerySpacedRepetiotions):
     pass
 
 

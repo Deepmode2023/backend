@@ -4,12 +4,12 @@ from strawberry.fastapi import BaseContext
 from src.user.models import UserModel
 from utils.security import decode_jwt_token
 
-from core.exeptions.schemas import NoValidTokenRaw
+from core.exeptions.schema import NoValidTokenRaw
 
 
 class AuthContext(BaseContext):
     @cached_property
-    def current_user(self) -> UserModel | None:
+    def current_user(self) -> UserModel:
         try:
             authorization = self.request.headers.get("Authorization", None)
             token = authorization.replace(

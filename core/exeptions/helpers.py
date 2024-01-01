@@ -1,4 +1,4 @@
-from . import schemas as exeptions
+from . import schema as exeptions
 from fastapi import status
 from core.schema.schemas import TReturnedModel, TReturnedFailed
 from functools import wraps
@@ -91,6 +91,10 @@ def exeption_handling_decorator_graph_ql(f):
         except exeptions.DoNotValidCredential as validCredential:
             return TReturnedFailed(details=validCredential.get_message,
                                    status=status.HTTP_401_UNAUTHORIZED, data=[])
+
+        except exeptions.StringWithLimit as stringWithLimit:
+            return TReturnedFailed(details=stringWithLimit.get_message,
+                                   status=status.HTTP_400_BAD_REQUEST, data=[])
 
         except exeptions.UnknownExceptions as exeption:
             "HERE WE NEED PROVIDE LOGIC FOR ADDED TO DB"

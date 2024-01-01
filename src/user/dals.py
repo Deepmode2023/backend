@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import update, delete, select
 from typing import Union
 
-from core.exeptions.schemas import DontExistItemInsideDB
+from core.exeptions.schema import DontExistItemInsideDB
 from utils.image import ImageCreaterModel, ReturnedImageCreaterModel
 from .models import UserModel, PortalRole
 from db.call import scalars_fetch_one_or_none
