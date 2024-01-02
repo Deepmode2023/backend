@@ -58,8 +58,8 @@ class Mutation:
 
 @strawberry.type
 class Query:
-    @strawberry.mutation(name=GET_SPACED_REPETITION.get("name"),
-                         description=GET_SPACED_REPETITION.get("description"), permission_classes=[JWTAuth])
+    @strawberry.field(name=GET_SPACED_REPETITION.get("name"),
+                      description=GET_SPACED_REPETITION.get("description"), permission_classes=[JWTAuth])
     @exeption_handling_decorator_graph_ql
     async def get_spaced_repetition(self, info: Info, date_start: datetime,
                                     date_end: datetime, slug: Optional[spaced_schema.SlugEnum] = None, title: Optional[str] = None) -> spaced_schema.ReturnedSpacedRepetitionGetType:

@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-import strawberry
 from fastapi.responses import JSONResponse
 from fastapi import HTTPException
 from typing import Optional
@@ -28,27 +27,7 @@ class ResponseType(BaseModel):
     detail: list[ResponseDetailType]
 
 
-## ----------------- GRAPHQL ----------------- ##
-
-
-@strawberry.type
-class GraphQLResponseCtx:
-    reason: str
-
-
-@strawberry.type
-class GraphQLResponseDetailType:
-    type: str
-    loc: list[str]
-    msg: str
-    input: str
-    ctx: ResponseCtx
-
-
-@strawberry.type
-class GraphQLResponseType:
-    detail: list[GraphQLResponseDetailType]
-
+## ------------------------------- TOTAL TYPE FOR API --------------------------------- ##
 
 def ResponseAPI(msg: str, input: dict, reason: str = "", loc: list[str] = [],
                 header: Optional[dict] = None, status_code: int = 200) -> JSONResponse:
