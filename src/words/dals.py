@@ -1,17 +1,18 @@
 from typing import Union, Optional
-from sqlalchemy import select, or_, update, delete
+from sqlalchemy import select, or_, update, delete, insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from utils.security import access_decorator
 from utils.params_helpers import CommonParams
 from .models import WordModel
 from .schema import PartOfSpeach
+from uuid import UUID
 from core.exeptions import schema as core_exeptions
 
 from .helpers import return_words_kwarg_after_check_permission
+from src.user.models import UserModel
 
-
-from db.call import scalars_fetch_one_or_none
+from db.call import scalars_fetch_one_or_none, add_fetch_one_item
 
 
 class WordDAL:
@@ -31,16 +32,14 @@ class WordDAL:
         )
         return await self.db_session.scalars(select(WordModel).where(filter_condition).limit(commonParams.limmit).offset(commonParams.skip))
 
-    @access_decorator
-    async def create_word(self, slang: str, name: str, translate: str, part_of_speach: PartOfSpeach, slug: str, example: str, synonym: list[str], image_url: Union[str, None], ** kwargs) -> WordModel:
-        word = WordModel(user_id=kwargs.get("user").user_id, slug=str.lower(slug), name=str.lower(name), translate=str.lower(translate), synonym=synonym,
-                         example=str.lower(example), part_of_speach=part_of_speach, image_url=image_url, slang=slang)
+    async def create_word(self, current_user: UserModel, **words_kwargs) -> WordModel:
+        print(words_kwargs)
         try:
-            self.db_session.add(word)
-            await self.db_session.commit()
+            smtp = insert(WordModel).values(user_id=UUID(
+                current_user.user_id), **words_kwargs).returning(WordModel)
+            return await add_fetch_one_item(smtp)
         except Exception:
             raise core_exeptions.AlreadyExistInDB
-        return word
 
     @access_decorator
     async def update_word(self, id: int, slang: str, name: Union[str, None], translate:  Union[str, None], part_of_speach:  Union[PartOfSpeach, None], slug:  Union[str, None], example:  Union[str, None], synonym: Union[list[str], None], image_url: Union[str, None], **kwargs) -> WordModel:

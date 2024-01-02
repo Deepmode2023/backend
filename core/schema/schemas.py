@@ -1,14 +1,5 @@
-from pydantic import BaseModel
-
-from typing import Union, Dict, Any
-from core.exeptions.schema import BasicExeptionsSchema
+from core.exeptions.schema import BasicExceptionSchema
 
 
-class TReturnedModel(BaseModel):
-    details: str
-    status: int
-    data:  Union[list[Dict[str, Any]], None]
-
-
-class TReturnedFailed(BasicExeptionsSchema):
+class TReturnedFailed(BasicExceptionSchema):
     pass

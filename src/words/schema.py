@@ -3,12 +3,9 @@ from typing import Optional, Union, Annotated
 from dataclasses import field
 from enum import Enum
 
-from core.exeptions.schema import BasicExeptionsSchema
+from core.exeptions.schema import BasicExceptionSchema
 from core.schema.schemas import TReturnedFailed
 from utils.params_helpers import ReturnedWithCommanParams
-
-
-from .models import WordModel
 
 
 @strawberry.enum
@@ -58,8 +55,8 @@ ReturnWordsExtendType = Annotated[Union[ReturnedWordsType,
 
 
 @strawberry.type
-class ReturnWordCreatedType(BasicExeptionsSchema):
-    data: list[Word]
+class ReturnWordCreatedType(BasicExceptionSchema):
+    data: Word
 
 
 ReturnCreatedWordExtendType = Annotated[
@@ -70,7 +67,7 @@ ReturnCreatedWordExtendType = Annotated[
 
 
 @strawberry.type
-class ReturnWordUpdatedType(BasicExeptionsSchema):
+class ReturnWordUpdatedType(BasicExceptionSchema):
     data: list[Word]
 
 
@@ -83,7 +80,7 @@ ReturnUpdatedWordExtendType = Annotated[
 # DELETE WORD BLOCK
 
 @strawberry.type
-class ReturnWordDeleteType(BasicExeptionsSchema):
+class ReturnWordDeleteType(BasicExceptionSchema):
     data: Word
 
 

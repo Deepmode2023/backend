@@ -4,7 +4,7 @@ from typing import Union, Annotated
 from datetime import datetime
 
 
-from core.exeptions.schema import BasicExeptionsSchema
+from core.exeptions.schema import BasicExceptionSchema
 from core.schema.schemas import TReturnedFailed
 
 
@@ -34,12 +34,12 @@ class SpacedRepetitionResponse:
 
 
 @strawberry.type
-class ReturnedSpacedRepetition(BasicExeptionsSchema):
+class ReturnedSpacedRepetition(BasicExceptionSchema):
     data: SpacedRepetitionResponse
 
 
 @strawberry.type
-class ReturnedSpacedRepetitionList(BasicExeptionsSchema):
+class ReturnedSpacedRepetitionList(BasicExceptionSchema):
     data: list[SpacedRepetitionResponse]
 
 

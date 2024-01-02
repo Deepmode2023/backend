@@ -7,6 +7,7 @@ from utils.math import calculate_pagination_page
 from db.session import get_session
 from fastapi import status as StatusFastApi
 from utils.security import JWTAuth
+from utils.basic import build_kwargs_not_none
 
 
 from . import constants as constantPoint
@@ -17,6 +18,30 @@ from core.exeptions.helpers import exeption_handling_decorator_graph_ql
 
 @strawberry.type
 class Mutation:
+
+    @strawberry.mutation(name=constantPoint.CREATE_WORD["name"],
+                         description=constantPoint.CREATE_WORD["descriptions"], permission_classes=[JWTAuth])
+    @exeption_handling_decorator_graph_ql
+    async def create_word(self, info: Info,
+                          name: str, part_of_speach: SchemaInstanceType.PartOfSpeach,
+                          translate: str, slug: str, example: Optional[str] = "",
+                          slang: Optional[SchemaInstanceType.SlangEnum] = SchemaInstanceType.SlangEnum.ENG,
+                          synonym: Optional[list[str]] = [], image_url: Optional[str] = None) -> SchemaInstanceType.ReturnCreatedWordExtendType:
+        try:
+            current_user = info.context.current_user
+            async with get_session() as db_session:
+                words_kwargs = build_kwargs_not_none(slang=slang, name=name,
+                                                     translate=translate, part_of_speach=part_of_speach, slug=slug,
+                                                     example=example, synonym=synonym, image_url=image_url)
+                dals = WordDAL(db_session=db_session)
+                created_word = await dals.create_word(current_user=current_user, **words_kwargs)
+
+                return SchemaInstanceType.ReturnWordCreatedType(details=f"Successfuly created word with ID={created_word.id}",
+                                                                status=StatusFastApi.HTTP_201_CREATED, data=SchemaInstanceType.Word(**created_word.toJson))
+
+        except Exception:
+            raise
+
     @strawberry.mutation(name=constantPoint.UPDATE_WORD["name"],
                          description=constantPoint.UPDATE_WORD["descriptions"], permission_classes=[JWTAuth])
     @exeption_handling_decorator_graph_ql

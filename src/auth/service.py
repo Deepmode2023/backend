@@ -1,10 +1,8 @@
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi import status, APIRouter, Depends, Header
-from typing import Union
 
 from .dals import AuthDAL
 from db.session import get_session
-from .schemas import TokenResponse
 from core.exeptions.helpers import exeption_handling_decorator
 
 
