@@ -1,7 +1,6 @@
 from fastapi import status, APIRouter, Depends
-from typing import Optional, Union
+from typing import Optional
 from db.session import get_session
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from utils.user_issues import current_user
 from .dals import SharedPreferenceDAL

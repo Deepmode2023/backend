@@ -9,9 +9,8 @@ from core.exeptions.schema import YouDontHaveAccessExeptions
 
 from .models import UserModel
 from .exeptions import DontAllowChangeUser
-from .schema import ResponseUser, ResponseTRetunedModel
+from .schema import ResponseUser
 from .dals import UserDAL
-from core.schema.schemas import TReturnedModel
 from core.exeptions.helpers import responses_status_errors, exeption_handling_decorator
 from core.exeptions.schema import DontExistItemInsideDB
 
@@ -57,9 +56,9 @@ async def get_user_details(current_user: UserModel = Depends(current_user)):
     return ResponseAPI(msg="Your account details.", input=current_user.toJson, reason="")
 
 
-@user_router.put("/update_user", response_model=Union[ResponseTRetunedModel, TReturnedModel], responses={**responses_status_errors, 403: {"model": TReturnedModel, "description": DontAllowChangeUser().get_message}})
+@user_router.put("/update_user", response_model=ResponseType, responses={**responses_status_errors, 403: {"model": ResponseType, "description": DontAllowChangeUser().get_message}})
 @exeption_handling_decorator
-async def update_user(email: Annotated[EmailStr, Form()], current_user: Union[UserModel, TReturnedModel] = Depends(current_user), name: Annotated[Union[str, None], Form()] = None, surname: Annotated[Union[str, None], Form()] = None, avatar: UploadFile = File(None)):
+async def update_user(email: Annotated[EmailStr, Form()], current_user: UserModel = Depends(current_user), name: Annotated[Union[str, None], Form()] = None, surname: Annotated[Union[str, None], Form()] = None, avatar: UploadFile = File(None)):
     params = build_kwargs_not_none(
         **{"name": name, "surname": surname})
     try:
@@ -91,9 +90,9 @@ async def update_user(email: Annotated[EmailStr, Form()], current_user: Union[Us
         raise
 
 
-@user_router.delete("/delete_user", response_model=Union[ResponseTRetunedModel, TReturnedModel])
+@user_router.delete("/delete_user", response_model=ResponseType)
 @exeption_handling_decorator
-async def delete_user(email: EmailStr, current_user: Union[UserModel, TReturnedModel] = Depends(current_user)):
+async def delete_user(email: EmailStr, current_user: UserModel = Depends(current_user)):
     try:
         if isinstance(current_user, UserModel):
             is_access = is_admin_checked(roles=current_user.roles)

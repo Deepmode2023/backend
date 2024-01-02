@@ -3,7 +3,7 @@ from typing import Optional
 
 
 @strawberry.type
-class BasicExeptionsSchema:
+class BasicExceptionSchema:
     details: str
     status: int
 

@@ -23,24 +23,24 @@ class WordModel(Base):
         "users.user_id", ondelete="CASCADE", name="fk_user_id"))
     user = relationship("UserModel", back_populates='user_words')
 
-    def __repr__(self):
-        return f'WordModel(id={self.id}, name={self.name})'
+    def __repr__(cls):
+        return f'WordModel(id={cls.id}, name={cls.name})'
 
     @property
-    def toJson(self):
+    def toJson(cls):
         return {
-            "id": int(self.id),
-            "name": self.name,
-            "slug": self.slug,
-            "translate": self.translate,
-            "example": self.example,
-            "synonym": self.synonym,
-            "part_of_speach": self.part_of_speach,
-            "image_url": self.image_url
+            "id": cls.id,
+            "name": cls.name,
+            "slug": cls.slug,
+            "translate": cls.translate,
+            "example": cls.example,
+            "synonym": cls.synonym,
+            "part_of_speach": cls.part_of_speach,
+            "image_url": cls.image_url
         }
 
-    def __getitem__(self, item):
-        word = self.toJson.get(item, None)
+    def __getitem__(cls, item):
+        word = cls.toJson.get(item, None)
         if word == None:
             raise NotFieldExist
         return word
