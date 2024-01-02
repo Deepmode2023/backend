@@ -33,6 +33,6 @@ main_app.include_router(graphql_app, prefix="/api/graphql",
                         tags=['Word', "Spaced Repetition"])
 
 
-@main_app.post("/", tags=["Admin"])
+@main_app.get("/", tags=["Admin"])
 async def main():
-    return {"message": "Hello Worlsdfsdd"}
+    return {"api", "hello world"}

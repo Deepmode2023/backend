@@ -3,45 +3,43 @@ from typing import Optional, Union
 from db.session import get_session
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from utils.user_issues import oauth2_schema, current_user
+from utils.user_issues import current_user
 from .dals import SharedPreferenceDAL
 from .models import ThemeColor
-from core.schema.schemas import TReturnedModel
-from .schema import ReturnedSharedPreference
 
 from src.user.models import UserModel
-from core.exeptions.schema import UnknownExceptions
 from core.exeptions.helpers import exeption_handling_decorator
+
+
+from core.type import ResponseAPI, ResponseType
 
 preference_router = APIRouter()
 
 
-@preference_router.get("/", summary="Get Shared Preference",  status_code=status.HTTP_200_OK, response_model=Union[ReturnedSharedPreference, TReturnedModel])
+@preference_router.get("/", summary="Get Shared Preference",  status_code=status.HTTP_200_OK, response_model=ResponseType)
 @exeption_handling_decorator
-async def get_shared_preference(user: Union[TReturnedModel, UserModel] = Depends(current_user)):
+async def get_shared_preference(current_user: UserModel = Depends(current_user)):
     try:
-        if isinstance(user, TReturnedModel):
-            return user
         async with get_session() as db_session:
             dals = SharedPreferenceDAL(db_session=db_session)
             shared_preference_instance = await dals.get_shared_preference(
-                user=user)
+                current_user=current_user)
 
-            return ReturnedSharedPreference(details="Returned shared preference.", status=status.HTTP_200_OK, data=[shared_preference_instance.to_json])
-    except Exception as ex:
-        raise UnknownExceptions
+            return ResponseAPI(msg="Returned shared preference.",
+                               status_code=status.HTTP_200_OK, input=shared_preference_instance.toJson)
+    except Exception:
+        raise
 
 
-@preference_router.put("/", summary="Change Shared Preference", status_code=status.HTTP_200_OK, response_model=Union[ReturnedSharedPreference, TReturnedModel])
+@preference_router.put("/", summary="Change Shared Preference", status_code=status.HTTP_200_OK, response_model=ResponseType)
 @exeption_handling_decorator
-async def put_shared_preference(user: Union[TReturnedModel, UserModel] = Depends(current_user), theme: Optional[ThemeColor] = None, shared_mode: Optional[bool] = None):
+async def put_shared_preference(current_user: UserModel = Depends(current_user), theme: Optional[ThemeColor] = None, shared_mode: Optional[bool] = None):
     try:
-        if isinstance(user, TReturnedModel):
-            return user
         async with get_session() as db_session:
             dals = SharedPreferenceDAL(db_session=db_session)
-            shared_preference_instance = await dals.put_shared_preference(user=user, theme=theme, shared_mode=shared_mode)
+            shared_preference_instance = await dals.put_shared_preference(current_user=current_user, theme=theme, shared_mode=shared_mode)
 
-            return ReturnedSharedPreference(details="Returned shared preference.", status=status.HTTP_200_OK, data=[shared_preference_instance.to_json])
+            return ResponseAPI(msg="Returned shared preference.",
+                               status_code=status.HTTP_200_OK, input=shared_preference_instance.toJson)
     except Exception:
-        raise UnknownExceptions
+        raise

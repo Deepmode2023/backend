@@ -15,37 +15,10 @@ from .dals import WordDAL
 from core.exeptions.helpers import exeption_handling_decorator_graph_ql
 
 
-from typing import Annotated, cast, Type
-from pydantic import GetJsonSchemaHandler, BaseModel
-from pydantic_core.core_schema import JsonSchema, with_info_plain_validator_function
-from pydantic_core import CoreSchema, core_schema
-from typing import Any, Callable
-
-
-class Zima:
-    @classmethod
-    def _validate(cls, __input_value: Any, _: Any) -> bool:
-        print(__input_value)
-        return cast(str, __input_value)
-
-    @classmethod
-    def __get_pydantic_json_schema__(
-        cls, core_schema: CoreSchema, handler: GetJsonSchemaHandler
-    ) -> JsonSchema:
-
-        return {"type": "string", "format": "color"}
-
-    @classmethod
-    def __get_pydantic_core_schema__(
-        cls, source: Type[Any], handler: Callable[[Any], CoreSchema]
-    ) -> CoreSchema:
-        return with_info_plain_validator_function(cls._validate)
-
-
 @strawberry.type
 class Mutation:
     @strawberry.mutation(name=constantPoint.UPDATE_WORD["name"],
-                         description=constantPoint.UPDATE_WORD["descriptions"])
+                         description=constantPoint.UPDATE_WORD["descriptions"], permission_classes=[JWTAuth])
     @exeption_handling_decorator_graph_ql
     async def update_word(self, info: Info, id: int,
                           slang: Optional[SchemaInstanceType.SlangEnum] = SchemaInstanceType.SlangEnum.ENG,
@@ -68,7 +41,7 @@ class Mutation:
             raise
 
     @strawberry.mutation(name=constantPoint.DELETE_WORD["name"],
-                         description=constantPoint.DELETE_WORD["descriptions"])
+                         description=constantPoint.DELETE_WORD["descriptions"], permission_classes=[JWTAuth])
     @exeption_handling_decorator_graph_ql
     async def delete_word(self, info: Info, id: int) -> SchemaInstanceType.ReturnDeleteWordExtendType:
         try:
