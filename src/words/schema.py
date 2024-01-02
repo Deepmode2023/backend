@@ -8,9 +8,6 @@ from core.schema.schemas import TReturnedFailed
 from utils.params_helpers import ReturnedWithCommanParams
 
 
-from .models import WordModel
-
-
 @strawberry.enum
 class PartOfSpeach(str, Enum):
     NOUN = "NOUN"
