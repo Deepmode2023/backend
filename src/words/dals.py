@@ -33,7 +33,6 @@ class WordDAL:
         return await self.db_session.scalars(select(WordModel).where(filter_condition).limit(commonParams.limmit).offset(commonParams.skip))
 
     async def create_word(self, current_user: UserModel, **words_kwargs) -> WordModel:
-        print(words_kwargs)
         try:
             smtp = insert(WordModel).values(user_id=UUID(
                 current_user.user_id), **words_kwargs).returning(WordModel)
