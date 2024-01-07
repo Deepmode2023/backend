@@ -35,6 +35,7 @@ user_router = APIRouter(dependencies=[Depends(oauth2_schema)])
 @exeption_handling_decorator
 async def create_user(name: Annotated[str, Form()], surname: Annotated[str, Form()], email: Annotated[EmailStr, Form()], password: Annotated[str, Form()], avatar: UploadFile = File(None)):
     try:
+
         async with get_session() as db_session:
             dals = UserDAL(db_session=db_session)
             user_account = await dals.create_user_account(image_instance=ImageCreaterModel(image=avatar),
@@ -92,7 +93,7 @@ async def update_user(email: Annotated[EmailStr, Form()], current_user: UserMode
 
 @user_router.delete("/delete_user", response_model=ResponseType)
 @exeption_handling_decorator
-async def delete_user(email: EmailStr, current_user: UserModel = Depends(current_user)):
+async def delete_user(email: Annotated[EmailStr, Form()], current_user: UserModel = Depends(current_user)):
     try:
         if isinstance(current_user, UserModel):
             is_access = is_admin_checked(roles=current_user.roles)

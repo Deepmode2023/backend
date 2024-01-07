@@ -38,7 +38,7 @@ def ResponseAPI(msg: str, input: dict, reason: str = "", loc: list[str] = [],
 
 def ExceptionResponseAPI(msg: str, input: dict, status_code: int, reason: str, loc: list[str] = [],
                          header: Optional[dict] = None) -> HTTPException:
-    content = ResponseType(type="error", loc=loc,
-                           msg=msg, input={key: check_on_wierd_type_and_return_str(input[key]) for key in input}, reason=reason).model_dump()
+    content = ResponseDetailType(type="error", loc=loc,
+                                 msg=msg, input={key: check_on_wierd_type_and_return_str(input[key]) for key in input}, ctx=ResponseCtx(reason=reason)).model_dump()
     raise HTTPException(
-        detail=content, status_code=status_code, headers=header)
+        detail=[content], status_code=status_code, headers=header)
