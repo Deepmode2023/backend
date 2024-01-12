@@ -14,7 +14,7 @@ class Settings(BaseSettings):
 
     @property
     def DATABASE_URL_async(self):
-        return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@deepmode_db:{self.DB_PORT}/{self.POSTGRES_DB}"
+        return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.POSTGRES_DB}"
 
     model_config = SettingsConfigDict(
         validate_default=False, env_file='.env', extra="allow")
