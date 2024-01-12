@@ -21,7 +21,6 @@ responses_status_errors = {404: {"model": ResponseType,
 
 
 def exeption_handling_decorator(f):
-
     @wraps(f)
     async def wrapper(*args, **kwargs):
         try:
@@ -73,12 +72,16 @@ def exeption_handling_decorator(f):
                                         header={"Authorization": "Bearer"})
 
         except exeptions.UnknownExceptions:
+
+            print(exeptions.UnknownExceptions().get_message, "<<<<<<")
             "HERE WE NEED PROVIDE LOGIC FOR ADDED TO DB"
             return ExceptionResponseAPI(msg=exeptions.UnknownExceptions().get_message,
                                         input={},
                                         reason=exeptions.UnknownExceptions().get_message,
                                         status_code=status.HTTP_451_UNAVAILABLE_FOR_LEGAL_REASONS)
-        except:
+        except Exception as ex:
+
+            print(ex, "<<<<<<")
             "HERE WE NEED PROVIDE LOGIC FOR ADDED TO DB"
             return ExceptionResponseAPI(msg=exeptions.UnknownExceptions().get_message,
                                         input={},

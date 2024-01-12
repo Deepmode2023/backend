@@ -104,8 +104,8 @@ class UnknownExceptions(Exception):
 
 class StringWithLimit(Exception):
     def __init__(self, limit: int = 50):
-        self.message = f"You passed a string that is too long. Must be less than or equal to {
-            limit}!"
+        self.message = f"""You passed a string that is too long. Must be less than or equal to {
+            limit}!"""
 
     def __str__(self) -> str:
         return self.message
