@@ -8,7 +8,7 @@ from src.shared_preference.service import preference_router
 
 
 origins = [
-    "http://localhost:8000",
+    "http://localhost:8001",
 ]
 
 
