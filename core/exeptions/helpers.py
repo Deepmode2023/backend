@@ -3,21 +3,7 @@ from fastapi import status
 from core.schema.schemas import TReturnedFailed
 from functools import wraps
 
-from core.type import ExceptionResponseAPI, ResponseType
-
-
-responses_status_errors = {404: {"model": ResponseType,
-                                 "description": exeptions.DoNotUpdateFieldsInDB().get_message},
-                           400: {"model": ResponseType,
-                                 "description": exeptions.NoValidTokenRaw().get_message},
-
-                           403: {"model": ResponseType,
-                                 "description": exeptions.YouDontHaveAccessExeptions().get_message},
-                           409: {"model": ResponseType,
-                                 "description": exeptions.AlreadyExistInDB().get_message},
-                           451: {"model": ResponseType,
-                                 "description": exeptions.UnknownExceptions().get_message},
-                           }
+from core.type import ExceptionResponseAPI
 
 
 def exeption_handling_decorator(f):
