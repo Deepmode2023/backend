@@ -9,10 +9,10 @@ from core.exeptions.schema import YouDontHaveAccessExeptions
 
 from .models import UserModel
 from .exeptions import DontAllowChangeUser
-from .schema import ResponseUser
+from .schemas import ResponseUser
 from .dals import UserDAL
-from core.exeptions.helpers import responses_status_errors, exeption_handling_decorator
-from core.exeptions.schema import DontExistItemInsideDB
+from .responses import CREATE_USER_RESPONSES, ME_USER_RESPONSES, UPDATE_USER_RESPONSES, DELETE_USER_RESPONSES
+
 
 from utils.security import is_admin_checked
 from utils.user_issues import current_user
@@ -22,16 +22,16 @@ from utils.time import is_utc_greater_now_utc
 from utils.dict import extract_key_or_value
 from utils.user_issues import oauth2_schema
 
-
 from db.session import get_session
 from core.type import ExceptionResponseAPI, ResponseType, ResponseAPI
-
+from core.exeptions.helpers import exeption_handling_decorator
+from core.exeptions.schema import DontExistItemInsideDB
 
 guest_router = APIRouter()
 user_router = APIRouter(dependencies=[Depends(oauth2_schema)])
 
 
-@guest_router.post("/", response_model=ResponseType)
+@guest_router.post("/", status_code=201, response_model=ResponseType, responses=CREATE_USER_RESPONSES)
 @exeption_handling_decorator
 async def create_user(name: Annotated[str, Form()], surname: Annotated[str, Form()], email: Annotated[EmailStr, Form()], password: Annotated[str, Form()], avatar: UploadFile = File(None)):
     try:
@@ -52,12 +52,12 @@ async def create_user(name: Annotated[str, Form()], surname: Annotated[str, Form
         raise
 
 
-@user_router.post("/me", response_model=ResponseType)
+@user_router.post("/me", status_code=200, response_model=ResponseType,  responses=ME_USER_RESPONSES)
 async def get_user_details(current_user: UserModel = Depends(current_user)):
     return ResponseAPI(msg="Your account details.", input=current_user.toJson, reason="")
 
 
-@user_router.put("/update_user", response_model=ResponseType, responses={**responses_status_errors, 403: {"model": ResponseType, "description": DontAllowChangeUser().get_message}})
+@user_router.put("/update_user", status_code=200, response_model=ResponseType, responses=UPDATE_USER_RESPONSES)
 @exeption_handling_decorator
 async def update_user(email: Annotated[EmailStr, Form()], current_user: UserModel = Depends(current_user), name: Annotated[Union[str, None], Form()] = None, surname: Annotated[Union[str, None], Form()] = None, avatar: UploadFile = File(None)):
     params = build_kwargs_not_none(
@@ -91,7 +91,7 @@ async def update_user(email: Annotated[EmailStr, Form()], current_user: UserMode
         raise
 
 
-@user_router.delete("/delete_user", response_model=ResponseType)
+@user_router.delete("/delete_user", status_code=200,  response_model=ResponseType, responses=DELETE_USER_RESPONSES)
 @exeption_handling_decorator
 async def delete_user(email: Annotated[EmailStr, Form()], current_user: UserModel = Depends(current_user)):
     try:

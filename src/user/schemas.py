@@ -1,9 +1,8 @@
 from pydantic import BaseModel, EmailStr
 from pydantic.dataclasses import dataclass
 from fastapi import Form
-from typing import Union, Optional, Annotated
+from typing import Optional, Annotated
 from datetime import datetime
-from enum import Enum
 
 
 @dataclass
@@ -31,16 +30,16 @@ class ResponseUser(BaseModel):
     updated_account: Optional[datetime] = None
 
 
-class MessageResponse(BaseModel):
-    status_code: int
-    detail: str
-    header: Optional[str] = None
+## DOCS SECTIONS ##
 
 
-class ErrorResonseUser(BaseModel):
-    message: Union[MessageResponse, ResponseUser]
+class ResponseDOCSDetailsType(BaseModel):
+    type: str
+    loc: list[str]
+    msg: str
+    input: ResponseUser
+    ctx: str
 
 
-class CheckedEmailCondition(str, Enum):
-    EXIST: "EXIST"
-    NOT_EXIST: "NOT_EXIST"
+class ResponseCreateDOCSType(BaseModel):
+    details: list[ResponseDOCSDetailsType]
