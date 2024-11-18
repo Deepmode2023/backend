@@ -27,10 +27,12 @@ main_app.include_router(auth_router, prefix="/api/auth", tags=["Auth"])
 main_app.include_router(guest_router, prefix="/api/user", tags=["User"])
 main_app.include_router(user_router, prefix="/api/user", tags=["User"])
 main_app.include_router(
-    preference_router, prefix="/api/shared-preference", tags=["Shared Preference"])
+    preference_router, prefix="/api/shared-preference", tags=["Shared Preference"]
+)
 
-main_app.include_router(graphql_app, prefix="/api/graphql",
-                        tags=['Word', "Spaced Repetition"])
+main_app.include_router(
+    graphql_app, prefix="/api/graphql", tags=["Word", "Spaced Repetition"]
+)
 
 
 @main_app.get("/", tags=["Admin"])

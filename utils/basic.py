@@ -1,5 +1,3 @@
-
-
 def contains_instace(list_contains: list[str], compare_str: str) -> bool:
     return any(compare_str in item for item in list_contains)
 
@@ -8,10 +6,15 @@ def contains_with_list(list_contains: list[str], compare_list: list[str]) -> boo
     compare_condition = 0
     for compare_item in compare_list:
         compare_condition += contains_instace(
-            list_contains=list_contains, compare_str=compare_item)
+            list_contains=list_contains, compare_str=compare_item
+        )
 
     return True if compare_condition > 0 else False
 
 
 def build_kwargs_not_none(except_kwargs: list[str] = [], **kwargs):
-    return {key: value for key, value in kwargs.items() if value != None and value != '' and key not in except_kwargs}
+    return {
+        key: value
+        for key, value in kwargs.items()
+        if value != None and value != "" and key not in except_kwargs
+    }

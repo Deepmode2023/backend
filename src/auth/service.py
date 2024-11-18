@@ -9,7 +9,7 @@ from core.exeptions.helpers import exeption_handling_decorator
 
 from .schemas import ResponseDOCSType
 from .responses import POST_TOKEN_RESPONSES, POST_TOKEN_REFRESH_RESPONSE
-from core.type import ResponseAPI, ResponseType
+from core.type.type import ResponseAPI, ResponseType
 
 auth_router = APIRouter()
 

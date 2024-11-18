@@ -60,6 +60,7 @@ uvicorn = {version = "0.25.0", extras = ["standard"]}
 uvloop = "0.18.0"
 watchfiles = "0.21.0"
 websockets = "11.0.3"
+poetry-plugin-export = "^1.8.0"
 
 
 [build-system]

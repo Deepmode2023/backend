@@ -23,7 +23,7 @@ from utils.dict import extract_key_or_value
 from utils.user_issues import oauth2_schema
 
 from db.session import get_session
-from core.type import ExceptionResponseAPI, ResponseType, ResponseAPI
+from core.type.type import ExceptionResponseAPI, ResponseType, ResponseAPI
 from core.exeptions.helpers import exeption_handling_decorator
 from core.exeptions.schema import DontExistItemInsideDB
 

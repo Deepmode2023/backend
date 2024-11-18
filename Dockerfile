@@ -1,23 +1,20 @@
 FROM python:3.9
 
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
-RUN apt-get update && apt-get install -y --no-install-recommends curl \
-    && curl -sSL https://install.python-poetry.org | python3.9 -
-    
-RUN pip install poetry
+RUN groupadd -r deepmode && useradd -r -g deepmode deepmode
 
 WORKDIR /app
 
-RUN poetry new .
-
-RUN poetry config virtualenvs.create false \
-    && poetry install --no-interaction --no-ansi
-
 COPY requirements-docker.txt .
 
-RUN poetry add $(cat requirements-docker.txt | xargs)
+RUN pip3 install -r requirements-docker.txt
+
+USER deepmode
 
 COPY . .
 
+VOLUME ["/app"]
+
+CMD ["uvicorn", "main:main_app", "--host", "0.0.0.0", "--port", "3000", "--reload"]

@@ -1,5 +1,5 @@
 from .schemas import ResponseDOCSType, ResponsePostTokenDOCSType
-from core.type import ResponseType
+from core.type.type import ResponseType
 from core.exeptions.schema import DontExistItemInsideDB, DoNotValidCredential
 
 
