@@ -63,27 +63,24 @@ async def update_user(email: Annotated[EmailStr, Form()], current_user: UserMode
     params = build_kwargs_not_none(
         **{"name": name, "surname": surname})
     try:
-        if isinstance(current_user, UserModel):
-            async with get_session() as db_session:
-                dals = UserDAL(db_session=db_session)
+        async with get_session() as db_session:
+            dals = UserDAL(db_session=db_session)
 
-                is_access = is_admin_checked(roles=current_user.roles)
-                last_update = current_user.updated_account.timetuple()
-                if is_access or is_utc_greater_now_utc(utc_data=datetime(last_update.tm_year,
-                                                                         last_update.tm_mon, last_update.tm_mday,
-                                                                         last_update.tm_hour).timestamp(), day_spaced=1):
-                    if is_access or current_user.email == email:
-                        user_account = await dals.update_user_account(email=email, image_instance=ImageCreaterModel(image=avatar), **params)
-                        return ResponseAPI(msg=f"Successfull update user {user_account.email}", status_code=status.HTTP_200_OK,
-                                           input=ResponseUser(**user_account.toJson, updated_account=user_account.updated_account).model_dump())
-                    else:
-                        raise YouDontHaveAccessExeptions(
-                            reason="for change metadata user!")
+            is_access = is_admin_checked(roles=current_user.roles)
+            last_update = current_user.updated_account.timetuple()
+            if is_access or is_utc_greater_now_utc(utc_data=datetime(last_update.tm_year,
+                                                                     last_update.tm_mon, last_update.tm_mday,
+                                                                     last_update.tm_hour).timestamp(), day_spaced=-1):
+                if is_access or current_user.email == email:
+                    user_account = await dals.update_user_account(email=email, image_instance=ImageCreaterModel(image=avatar), **params)
+                    return ResponseAPI(msg=f"Successfull update user {user_account.email}", status_code=status.HTTP_200_OK,
+                                       input=ResponseUser(**user_account.toJson).model_dump())
                 else:
-                    return ExceptionResponseAPI(msg=DontAllowChangeUser().get_message, input={}, reason=DontAllowChangeUser().get_message,
-                                                status_code=status.HTTP_403_FORBIDDEN,)
-        else:
-            raise DontExistItemInsideDB
+                    raise YouDontHaveAccessExeptions(
+                        reason="for change metadata user!")
+            else:
+                return ExceptionResponseAPI(msg=DontAllowChangeUser().get_message, input={}, reason=DontAllowChangeUser().get_message,
+                                            status_code=status.HTTP_403_FORBIDDEN,)
     except ThisFileIsNotPicture:
         return ExceptionResponseAPI(msg=ThisFileIsNotPicture().get_message, status=status.HTTP_400_BAD_REQUEST,
                                     input={}, reason=ThisFileIsNotPicture().get_message)
@@ -103,8 +100,7 @@ async def delete_user(email: Annotated[EmailStr, Form()], current_user: UserMode
                     delete_user = await dals.delete_user(email=email)
 
                     return ResponseAPI(msg=f"You successfully deleted the user's email address {delete_user.email}", status_code=status.HTTP_200_OK,
-                                       input=ResponseUser(**delete_user.toJson,
-                                                          updated_account=delete_user.updated_account).model_dump(), reason="")
+                                       input=ResponseUser(**delete_user.toJson).model_dump(), reason="")
             else:
                 raise YouDontHaveAccessExeptions(
                     reason="for delete metadata user!")

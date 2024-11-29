@@ -43,8 +43,8 @@ def is_contains_extension_accessed_image(filename: Union[str, None]) -> bool:
 
 class ImageModelBasic(BaseModel):
     pathname: PathnameUrl = PathnameUrl(small=os.path.join(
-        os.getcwd(), f"static/pub_image/{SizeImage.BIG.value}"), big=os.path.join(
-        os.getcwd(), f"static/pub_image/{SizeImage.SMALL.value}"))
+        os.getcwd(), f"static/pub_image/{SizeImage.SMALL.value}"), big=os.path.join(
+        os.getcwd(), f"static/pub_image/{SizeImage.BIG.value}"))
 
     def __str__(self):
         return f"{self.__class__.__name__}(pathname={self.pathname})"
@@ -101,8 +101,13 @@ class ImageCreaterModel(ImageModelBasic):
 
 
 class DeleterImages(ImageModelBasic):
-    def __init__(self, pathname: PathnameUrl):
-        self.pathname = pathname
+
+    @classmethod
+    def delete(cls, pathname: PathnameUrl | None):
+        if pathname:
+            images = pathname.model_dump()
+            for image in images:
+                os.remove(images.get(image))
 
 
 def resize_option(scale_params: int, width: int, height: int) -> tuple[int, int]:

@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from src.graphql_manager.service import graphql_app
 from src.user.service import user_router, guest_router
@@ -11,8 +12,9 @@ origins = [
     "http://localhost:8001",
 ]
 
-
 main_app = FastAPI(title="Deepmode")
+main_app.mount("/api/static", StaticFiles(directory="static/pub_image",
+               check_dir=True), name="static")
 
 main_app.add_middleware(
     CORSMiddleware,

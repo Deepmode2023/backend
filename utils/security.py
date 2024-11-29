@@ -1,37 +1,36 @@
-import utils.user_issues as user_issue_instance
-from datetime import datetime, timedelta
-from typing import Optional, Any
-from jose import jwt, JWTError
+from typing import Any, Optional
 
-
-from strawberry.types import Info
+import pendulum
+from jose import JWTError, jwt
 from strawberry.permission import BasePermission
+from strawberry.types import Info
 
-
-from src.user.models import UserModel, PortalRole
-from utils.basic import contains_with_list
+import utils.user_issues as user_issue_instance
 from core.exeptions.schema import NoValidTokenRaw
-
-
 from settings import settings
+from src.user.models import PortalRole, UserModel
+from utils.basic import contains_with_list
+from utils.time import RequestDateType
 
 
 class JWTAuth(BasePermission):
     message = "You have not been authenticated. You do not have access to this source."
 
     async def has_permission(self, source: Any, info: Info, **kwargs) -> bool:
-        authorization = info.context.request.headers.get(
-            "Authorization", None)
+        authorization = info.context.request.headers.get("Authorization", None)
 
         token = authorization.replace("Bearer ", "") if authorization else None
+
         try:
             decode_dict = decode_jwt_token(token=token)
-            now = round(datetime.now().timestamp())
+
+            now = pendulum.now().format("x")
             if now >= decode_dict.get("exp"):
                 raise
 
             check_user = await user_issue_instance.check_user_by_email_or_id_in_db(
-                user_id=decode_dict.get("user").get("user_id"))
+                user_id=decode_dict.get("user").get("user_id")
+            )
 
             if check_user is None:
                 raise
@@ -41,15 +40,20 @@ class JWTAuth(BasePermission):
             return False
 
 
-def create_access_token(user: UserModel, expires_delta: Optional[timedelta] = None):
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(
-            minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
-        )
+def create_access_token(
+    user: UserModel, expires_delta: Optional[RequestDateType] = None
+):
+    current = pendulum.now(tz=pendulum.now().timezone)
+    date = current.add(
+        minutes=expires_delta if expires_delta else settings.ACCESS_TOKEN_EXPIRE_MINUTES
+    )
     encoded_jwt = jwt.encode(
-        {"user": user.toJson, "exp": expire}, settings.SECRET_KEY, algorithm=settings.ALGORITHM
+        {
+            "user": user.toJson,
+            "exp": date.format("x"),
+        },
+        settings.SECRET_KEY,
+        algorithm=settings.ALGORITHM,
     )
     return encoded_jwt
 
@@ -57,9 +61,9 @@ def create_access_token(user: UserModel, expires_delta: Optional[timedelta] = No
 def decode_jwt_token(token: str) -> dict:
     try:
         decoded_dict = jwt.decode(
-            token=token, key=settings.SECRET_KEY, algorithms=settings.ALGORITHM)
-
-    except JWTError:
+            token=token, key=settings.SECRET_KEY, algorithms=settings.ALGORITHM
+        )
+    except JWTError as er:
         raise NoValidTokenRaw
 
     return decoded_dict
@@ -82,8 +86,6 @@ def access_decorator(low_function):
 
 
 def is_admin_checked(roles: list[str]) -> bool:
-    ACCESS_ROLES = [PortalRole.ROLE_PORTAL_ADMIN,
-                    PortalRole.ROLE_PORTAL_SUPERADMIN]
+    ACCESS_ROLES = [PortalRole.ROLE_PORTAL_ADMIN, PortalRole.ROLE_PORTAL_SUPERADMIN]
 
-    return contains_with_list(list_contains=roles,
-                              compare_list=ACCESS_ROLES)
+    return contains_with_list(list_contains=roles, compare_list=ACCESS_ROLES)

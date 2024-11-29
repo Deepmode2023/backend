@@ -64,4 +64,5 @@ class UserModel(Base):
             "surname": self.surname,
             "email": self.email,
             "roles": self.roles,
+            "updated_account": str(self.updated_account)
         }

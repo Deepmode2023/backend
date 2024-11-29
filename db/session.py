@@ -1,10 +1,10 @@
 from contextlib import asynccontextmanager
-from typing import Generator
+from typing import AsyncGenerator
+
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
 from settings import settings
-
 
 engine = create_async_engine(
     settings.DATABASE_URL_async,
@@ -12,12 +12,11 @@ engine = create_async_engine(
     echo=True,
 )
 
-async_session = sessionmaker(
-    engine, expire_on_commit=False, class_=AsyncSession)
+async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
 
 @asynccontextmanager
-async def get_session() -> Generator:
+async def get_session() -> AsyncGenerator:
     session_instance = None
     try:
         async with async_session() as session:
