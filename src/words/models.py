@@ -1,10 +1,10 @@
-from db.models import Base
+from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import ARRAY, UUID
-from sqlalchemy import Column, String, Integer, ForeignKey
 from sqlalchemy.orm import relationship
 
-from .exeptions import NotFieldExist
 from db.models import Base
+
+from .exeptions import NotFieldExist
 
 
 class WordModel(Base):
@@ -19,12 +19,13 @@ class WordModel(Base):
     synonym = Column(ARRAY(String), nullable=True)
     part_of_speach = Column(String, nullable=False)
     image_url = Column(String, nullable=True)
-    user_id = Column(UUID, ForeignKey(
-        "users.user_id", ondelete="CASCADE", name="fk_user_id"))
-    user = relationship("UserModel", back_populates='user_words')
+    user_id = Column(
+        UUID, ForeignKey("users.user_id", ondelete="CASCADE", name="fk_user_id")
+    )
+    user = relationship("UserModel", back_populates="user_words")
 
     def __repr__(cls):
-        return f'WordModel(id={cls.id}, name={cls.name})'
+        return f"WordModel(id={cls.id}, name={cls.name})"
 
     @property
     def toJson(cls):
@@ -36,7 +37,7 @@ class WordModel(Base):
             "example": cls.example,
             "synonym": cls.synonym,
             "part_of_speach": cls.part_of_speach,
-            "image_url": cls.image_url
+            "image_url": cls.image_url,
         }
 
     def __getitem__(cls, item):

@@ -1,12 +1,12 @@
-from fastapi.security import OAuth2PasswordRequestForm
-from fastapi import status, APIRouter, Depends, Header
+from core.exeptions.helpers import exeption_handling_decorator
+from core.type import ResponseAPI, ResponseType
+from db.session import get_session
+from fastapi import APIRouter, Depends, Header, WebSocket, status
 from fastapi.responses import JSONResponse
+from fastapi.security import OAuth2PasswordRequestForm
 
 from .dals import AuthDAL
-from db.session import get_session
-from core.exeptions.helpers import exeption_handling_decorator
-
-
+from .responses import POST_TOKEN_REFRESH_RESPONSE, POST_TOKEN_RESPONSES
 from .schemas import ResponseDOCSType
 from .responses import POST_TOKEN_RESPONSES, POST_TOKEN_REFRESH_RESPONSE
 from core.type.type import ResponseAPI, ResponseType
@@ -41,3 +41,10 @@ async def authenticate_refresh_token(refresh_token: str = Header()):
                                reason="", input=response.model_dump(), status_code=status.HTTP_200_OK)
     except:
         raise
+
+
+
+@auth_router.websocket("/session_manager")
+async def get_start_session(websocket: WebSocket):
+    await websocket.accept()
+    return {"es": True}

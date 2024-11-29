@@ -7,7 +7,7 @@ from sqlalchemy import update, delete, select
 from typing import Union
 
 from core.exeptions.schema import DontExistItemInsideDB
-from utils.image import ImageCreaterModel, ReturnedImageCreaterModel
+from utils.image import ImageCreaterModel, ReturnedImageCreaterModel, DeleterImages, PathnameUrl
 from .models import UserModel, PortalRole
 from db.call import scalars_fetch_one_or_none
 from utils.user_issues import check_user_by_email_or_id_in_db, RaiseUpByUserCondition
@@ -44,6 +44,8 @@ class UserDAL:
 
         if checked_account is not None:
             if image_instance.image is not None:
+                DeleterImages.delete(pathname=PathnameUrl(
+                    small=checked_account.avatar_small, big=checked_account.avatar_big) if checked_account.avatar_big and checked_account.avatar_small else None)
                 created_img: ReturnedImageCreaterModel = image_instance.create_image()
                 if created_img.is_create:
                     kwargs.update(**{"avatar_small": created_img.pathname.small,

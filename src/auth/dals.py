@@ -20,6 +20,7 @@ class AuthDAL:
 
         expire_second = timedelta(
             minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES).seconds
+
         access_token = create_access_token(user=user)
 
         return TokenResponse(access_token=access_token, refresh_token=refresh_token, expire_time=expire_second)

@@ -1,19 +1,16 @@
-import utils.user_issues as user_issue_instance
-from datetime import datetime, timedelta
-from typing import Optional, Any
-from jose import jwt, JWTError
+from typing import Any, Optional
 
-
-from strawberry.types import Info
+import pendulum
+from jose import JWTError, jwt
 from strawberry.permission import BasePermission
+from strawberry.types import Info
 
-
-from src.user.models import UserModel, PortalRole
-from utils.basic import contains_with_list
+import utils.user_issues as user_issue_instance
 from core.exeptions.schema import NoValidTokenRaw
-
-
 from settings import settings
+from src.user.models import PortalRole, UserModel
+from utils.basic import contains_with_list
+from utils.time import RequestDateType
 
 
 class JWTAuth(BasePermission):
@@ -23,9 +20,11 @@ class JWTAuth(BasePermission):
         authorization = info.context.request.headers.get("Authorization", None)
 
         token = authorization.replace("Bearer ", "") if authorization else None
+
         try:
             decode_dict = decode_jwt_token(token=token)
-            now = round(datetime.now().timestamp())
+
+            now = pendulum.now().format("x")
             if now >= decode_dict.get("exp"):
                 raise
 
@@ -41,15 +40,18 @@ class JWTAuth(BasePermission):
             return False
 
 
-def create_access_token(user: UserModel, expires_delta: Optional[timedelta] = None):
-    if expires_delta:
-        expire = datetime.utcnow() + expires_delta
-    else:
-        expire = datetime.utcnow() + timedelta(
-            minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
-        )
+def create_access_token(
+    user: UserModel, expires_delta: Optional[RequestDateType] = None
+):
+    current = pendulum.now(tz=pendulum.now().timezone)
+    date = current.add(
+        minutes=expires_delta if expires_delta else settings.ACCESS_TOKEN_EXPIRE_MINUTES
+    )
     encoded_jwt = jwt.encode(
-        {"user": user.toJson, "exp": expire},
+        {
+            "user": user.toJson,
+            "exp": date.format("x"),
+        },
         settings.SECRET_KEY,
         algorithm=settings.ALGORITHM,
     )
@@ -61,7 +63,6 @@ def decode_jwt_token(token: str) -> dict:
         decoded_dict = jwt.decode(
             token=token, key=settings.SECRET_KEY, algorithms=settings.ALGORITHM
         )
-
     except JWTError:
         raise NoValidTokenRaw
 

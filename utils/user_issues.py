@@ -1,23 +1,23 @@
-from fastapi import status, Depends
-from sqlalchemy import select, or_
+from datetime import datetime
 from enum import Enum
 from typing import Union
-from datetime import datetime
+
+import pendulum
+from fastapi import Depends, status
 from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy import or_, select
 
 import utils.security as security_utils
+from core.exeptions.schema import (
+    AlreadyExistInDB,
+    DoNotValidCredential,
+    DontExistItemInsideDB,
+    NoValidTokenRaw,
+)
+from core.type import ExceptionResponseAPI
+from db.call import scalars_fetch_one_or_none
 from src.user.models import UserModel
 from utils.hasher import hasher_instance
-from core.exeptions.schema import (
-    NoValidTokenRaw,
-    AlreadyExistInDB,
-    DontExistItemInsideDB,
-    DoNotValidCredential,
-)
-
-from db.call import scalars_fetch_one_or_none
-from core.type.type import ExceptionResponseAPI
-
 
 oauth2_schema = OAuth2PasswordBearer(tokenUrl="/api/auth/token", auto_error=False)
 
@@ -30,9 +30,9 @@ class RaiseUpByUserCondition(str, Enum):
 async def current_user(token: str = Depends(oauth2_schema)) -> UserModel:
     try:
         dict_from_token = security_utils.decode_jwt_token(token=token)
-
         expire_time = dict_from_token.get("exp")
-        now = round(datetime.now().timestamp())
+        now = pendulum.now(tz=pendulum.now().timezone).format("x")
+
         if now >= expire_time:
             return ExceptionResponseAPI(
                 msg="The token time has expired!",
