@@ -1,0 +1,41 @@
+#    NOUN = "NOUN"
+#    PRONOUN = "PRONOUN"
+#    VERB = "VERB"
+#    ADJECTIVE = "ADJECTIVE"
+#    ADVERB = "ADVERB" - Как? Где? Куда? Когда? Откуда? Почему?
+#    PREPOSITION = "PREPOSITION"
+#    CONJUNCTION = "CONJUNCTION"
+#    INTERJECTION = "INTERJECTION"
+
+#    ENG = "england"
+#    USA = "united states"
+#    PL = "poland"
+
+{
+  "target_class": "Words",
+  "data":
+    [
+      {
+        "user_id": "",
+        "name": "",
+        "translate": "",
+        "example": "",
+        "synonym": [],
+        "part_of_speach": "",
+        "slug": "",
+        "slang": "england",
+        "image_url": "",
+      },
+      {
+        "user_id": "",
+        "name": "spontaneously",
+        "translate": "спонтанность",
+        "example": "He spontaneously asked me.",
+        "synonym": ["неожиданно"],
+        "part_of_speach": "ADVERB",
+        "slug": "emotion",
+        "slang": "england",
+        "image_url": "",
+      },
+    ],
+}
