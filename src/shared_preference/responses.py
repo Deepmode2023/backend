@@ -2,7 +2,7 @@ from .schemas import ResponseGetDOCSType
 
 from core.exeptions.schema import DoNotUpdateFieldsInDB
 from core.exeptions.schema import NoValidTokenRaw
-from core.type import ResponseType
+from core.type.type import ResponseType
 
 GET_SHARED_PREFERNCE_RESPONSES = {
     200: {"description": "You have successfully obtained Deepmode settings!", "model": ResponseGetDOCSType},

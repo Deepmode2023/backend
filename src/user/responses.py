@@ -1,5 +1,5 @@
 from .schemas import ResponseCreateDOCSType
-from core.type import ResponseType
+from core.type.type import ResponseType
 from .exeptions import DontAllowChangeUser
 from core.exeptions.schema import DontExistItemInsideDB
 from core.exeptions.schema import NoValidTokenRaw

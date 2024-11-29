@@ -12,7 +12,7 @@ from db.session import get_session
 from utils.user_issues import current_user
 
 from core.exeptions.helpers import exeption_handling_decorator
-from core.type import ResponseAPI, ResponseType
+from core.type.type import ResponseAPI, ResponseType
 
 preference_router = APIRouter()
 

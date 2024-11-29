@@ -3,7 +3,7 @@ from fastapi import status
 from core.schema.schemas import TReturnedFailed
 from functools import wraps
 
-from core.type import ExceptionResponseAPI
+from core.type.type import ExceptionResponseAPI
 
 
 def exeption_handling_decorator(f):

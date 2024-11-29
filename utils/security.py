@@ -63,7 +63,7 @@ def decode_jwt_token(token: str) -> dict:
         decoded_dict = jwt.decode(
             token=token, key=settings.SECRET_KEY, algorithms=settings.ALGORITHM
         )
-    except JWTError as er:
+    except JWTError:
         raise NoValidTokenRaw
 
     return decoded_dict

@@ -8,6 +8,8 @@ from fastapi.security import OAuth2PasswordRequestForm
 from .dals import AuthDAL
 from .responses import POST_TOKEN_REFRESH_RESPONSE, POST_TOKEN_RESPONSES
 from .schemas import ResponseDOCSType
+from .responses import POST_TOKEN_RESPONSES, POST_TOKEN_REFRESH_RESPONSE
+from core.type.type import ResponseAPI, ResponseType
 
 auth_router = APIRouter()
 

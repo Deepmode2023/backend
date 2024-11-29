@@ -21,11 +21,11 @@ class ReturnedImageCreaterModel(BaseModel):
 
 
 class SizeImage(str, Enum):
-    SMALL = 'thrumb_image'
+    SMALL = "thrumb_image"
     BIG = "image"
 
 
-EXTENSION_IMAGE = {'png', 'jpg', 'jpeg', 'wepb'}
+EXTENSION_IMAGE = {"png", "jpg", "jpeg", "wepb"}
 
 
 def is_contains_extension_accessed_image(filename: Union[str, None]) -> bool:
@@ -68,7 +68,12 @@ class ImageCreaterModel(ImageModelBasic):
         if not os.path.exists(self.pathname.small):
             os.makedirs(self.pathname.small)
 
-    def create_image(self, scale_params: int = 5, width: Optional[int] = None, height: Optional[int] = None) -> ReturnedImageCreaterModel:
+    def create_image(
+        self,
+        scale_params: int = 5,
+        width: Optional[int] = None,
+        height: Optional[int] = None,
+    ) -> ReturnedImageCreaterModel:
         POSITION_WIDTH_INSIDE_PILLOW_SIZE = 0
         POSITION_HEIGHT_INSIDE_PILLOW_SIZE = 1
         self.check_directory_static
@@ -84,14 +89,19 @@ class ImageCreaterModel(ImageModelBasic):
             big_path = f"{self.pathname.big}/{uuid4()}.webp"
 
             small_image = big_image.resize(
-                resize_option(scale_params=scale_params,
-                              width=big_image.size[POSITION_WIDTH_INSIDE_PILLOW_SIZE],
-                              height=big_image.size[POSITION_HEIGHT_INSIDE_PILLOW_SIZE]))
-            small_image.save(small_path, 'WEBP')
-            big_image.save(big_path, 'WEBP')
+                resize_option(
+                    scale_params=scale_params,
+                    width=big_image.size[POSITION_WIDTH_INSIDE_PILLOW_SIZE],
+                    height=big_image.size[POSITION_HEIGHT_INSIDE_PILLOW_SIZE],
+                )
+            )
+            small_image.save(small_path, "WEBP")
+            big_image.save(big_path, "WEBP")
 
-            return ReturnedImageCreaterModel(is_create=True,
-                                             pathname=PathnameUrl(small=str(small_path), big=str(big_path)))
+            return ReturnedImageCreaterModel(
+                is_create=True,
+                pathname=PathnameUrl(small=str(small_path), big=str(big_path)),
+            )
         else:
             raise FailedCreate(reason="picture")
 
@@ -116,7 +126,7 @@ def resize_option(scale_params: int, width: int, height: int) -> tuple[int, int]
 
 
 ### EXEPTIONS###
-class ThisFileIsNotPicture (Exception):
+class ThisFileIsNotPicture(Exception):
     def __str__(self) -> str:
         return "This file is not a png, jpg, jpeg, wepb image!"
 
