@@ -1,18 +1,20 @@
+from math import floor, log10
+
 import pendulum
-from math import log10, floor
+from pydantic import BaseModel, ValidationInfo, validator
+from pydantic_core import core_schema
+
 
 class DateType:
-    __slots__ = ["timestamp", "date"]
+    date: pendulum
+    timestamp: int
 
-    def __init__(self, time, /):
+    def __init__(self, date, /):
         """
         Initialize DateType from timestamp or ISO date string.
         Raises ValueError for unknown formats.
         """
-        if self._check_is_timestamp(time):
-            self.date = self._parse_timestamp_to_date(time)
-        else:
-            self.date = pendulum.parse(time)
+        self.date = date
         self.timestamp = self.date.timestamp()
 
     def __repr__(self):
@@ -40,12 +42,12 @@ class DateType:
         return None
 
     @staticmethod
-    def _check_is_timestamp(time):
+    def _check_is_timestamp(date):
         """
         Check if the value is a valid numeric timestamp.
         """
         try:
-            float(time)
+            float(date)
             return True
         except ValueError:
             return False
@@ -69,3 +71,39 @@ class DateType:
             return pendulum.from_timestamp(timestamp / 1e9)
         else:
             raise ValueError("Unknown timestamp format")
+
+    @classmethod
+    def _parse_str_to_date(cls, date: str):
+        """
+        Check passing date str on pendulum date format
+        """
+        if isinstance(date, str):
+            return pendulum.parse(date)
+
+    @classmethod
+    def __get_pydantic_core_schema__(cls, source_type, handler):
+        return core_schema.with_info_plain_validator_function(
+            cls.validate_date_field, metadata={"type": "string"}
+        )
+
+    @classmethod
+    def __get_pydantic_json_schema__(cls, schema: core_schema.CoreSchema, handler):
+        return {
+            "type": "string",
+            "description": "A string containing only alphabetic characters.",
+        }
+
+    @classmethod
+    def validate_date_field(cls, date: str | int, _: ValidationInfo):
+        """
+        Check field on correct string or integer type
+        """
+        try:
+            if cls._check_is_timestamp(date):
+                return cls._parse_timestamp_to_date(date)
+
+            return cls._parse_str_to_date(date)
+        except:
+            raise ValueError(
+                f"Arguments date={date} is encorrect. You must pass integer equal 10-19 chars or str with correct date format = year/month/day"
+            )

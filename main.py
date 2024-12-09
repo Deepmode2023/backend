@@ -2,19 +2,21 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from src.graphql_manager.service import graphql_app
-from src.user.service import user_router, guest_router
 from src.auth.service import auth_router
+from src.graphql_manager.service import graphql_app
 from src.shared_preference.service import preference_router
-
+from src.user.service import guest_router, user_router
 
 origins = [
     "http://localhost:8001",
 ]
 
 main_app = FastAPI(title="Deepmode")
-main_app.mount("/api/static", StaticFiles(directory="static/pub_image",
-               check_dir=True), name="static")
+main_app.mount(
+    "/api/static",
+    StaticFiles(directory="static/pub_image", check_dir=True),
+    name="static",
+)
 
 main_app.add_middleware(
     CORSMiddleware,
@@ -32,9 +34,7 @@ main_app.include_router(
     preference_router, prefix="/api/shared-preference", tags=["Shared Preference"]
 )
 
-main_app.include_router(
-    graphql_app, prefix="/api/graphql", tags=["Word", "Spaced Repetition"]
-)
+main_app.include_router(graphql_app, prefix="/api/graphql", tags=["Word"])
 
 
 @main_app.get("/", tags=["Admin"])
